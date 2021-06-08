@@ -19,7 +19,7 @@ batch_size = 32
 #validation_ds = tf.data.Dataset.from_tensor_slices((validation_images, validation_labels))
 
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    "E:/Dropbox (The Francis Crick)/Debugging/New folder/Zebrafish_subset",
+    "Zebrafish",
     validation_split=0.2,
     subset="training",
     seed=1337,
@@ -28,7 +28,7 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
 )
 
 validation_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    "E:/Dropbox (The Francis Crick)/Debugging/New folder/Zebrafish_subset",
+    "Zebrafish",
     validation_split=0.2,
     subset="validation",
     seed=1337,
@@ -111,7 +111,7 @@ x = keras.layers.Dense(4096, activation='relu')(x)
 x = keras.layers.Dropout(0.5)(x)
 x = keras.layers.Dense(4096, activation='relu')(x)
 x = keras.layers.Dropout(0.5)(x)
-outputs = keras.layers.Dense(2, activation='sigmoid')(x)
+outputs = keras.layers.Dense(5, activation='softmax')(x)
 
 model = keras.Model(inputs, outputs)
 
