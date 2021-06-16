@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 import os
 import time
 
-image_size = (411, 491)
-batch_size = 64
-num_classes = 2
+image_size = (227, 190)
+batch_size = 512
+num_classes = 5
 epochs = 200
-buffer_size = 2
+buffer_size = 4
 
 # (train_images, train_labels), (test_images, test_labels) = keras.datasets.cifar10.load_data()
 
-# CLASS_NAMES= ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+CLASS_NAMES = ['Early', 'Early-Mid', 'Mid', 'Late-Mid', 'Late']
 
 # validation_images, validation_labels = train_images[:5000], train_labels[:5000]
 # train_images, train_labels = train_images[5000:], train_labels[5000:]
@@ -23,6 +23,7 @@ buffer_size = 2
 
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Train",
+    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
     validation_split=0.2,
     subset="training",
     seed=1337,
@@ -31,11 +32,12 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     shuffle=True,
     color_mode="grayscale",
     labels="inferred",
-    label_mode="binary"
+    label_mode="categorical"
 )
 
 validation_ds = tf.keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Train",
+    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
     validation_split=0.2,
     subset="validation",
     seed=1337,
@@ -44,27 +46,30 @@ validation_ds = tf.keras.preprocessing.image_dataset_from_directory(
     shuffle=True,
     color_mode="grayscale",
     labels="inferred",
-    label_mode="binary"
+    label_mode="categorical"
 )
 
 test_ds = tf.keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Test",
+    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test",
     image_size=image_size,
     batch_size=batch_size,
     color_mode="grayscale",
     labels="inferred",
-    label_mode="binary"
+    label_mode="categorical"
 )
 
-train_ds = train_ds.cache().prefetch(buffer_size=buffer_size)
-validation_ds = validation_ds.cache().prefetch(buffer_size=buffer_size)
+train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
+validation_ds = validation_ds.prefetch(buffer_size=buffer_size).cache()
 
 plt.figure(figsize=(17, 20))
 for images, labels in train_ds.take(1):
     for i in range(25):
         ax = plt.subplot(5, 5, i + 1)
         plt.imshow(images[i].numpy().astype("uint8"))
-        plt.title(int(labels[i]))
+        for j in range(len(CLASS_NAMES)):
+            if labels.numpy()[i][j] > 0:
+                plt.title(CLASS_NAMES[j])
         plt.axis("off")
 plt.savefig('sample_images.png')
 
@@ -140,10 +145,10 @@ with strategy.scope():
     # else:
     #    activation = "softmax"
     # outputs = keras.layers.Dense(num_classes, activation=activation)(x)
-    outputs = keras.layers.Dense(1, activation="sigmoid")(x)
+    outputs = keras.layers.Dense(num_classes, activation="softmax")(x)
     model = keras.Model(inputs, outputs)
 
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 history = model.fit(train_ds,
                     epochs=epochs,
