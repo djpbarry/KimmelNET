@@ -7,7 +7,7 @@ import time
 image_size = (227, 190)
 batch_size = 512
 num_classes = 5
-epochs = 200
+epochs = 2000
 buffer_size = 4
 
 # (train_images, train_labels), (test_images, test_labels) = keras.datasets.cifar10.load_data()
@@ -23,7 +23,7 @@ CLASS_NAMES = ['Early', 'Early-Mid', 'Mid', 'Late-Mid', 'Late']
 
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Train",
-    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
+    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
     validation_split=0.2,
     subset="training",
     seed=1337,
@@ -37,7 +37,7 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
 
 validation_ds = tf.keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Train",
-    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
+    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
     validation_split=0.2,
     subset="validation",
     seed=1337,
@@ -51,7 +51,7 @@ validation_ds = tf.keras.preprocessing.image_dataset_from_directory(
 
 test_ds = tf.keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Test",
-    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test",
+    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test",
     image_size=image_size,
     batch_size=batch_size,
     color_mode="grayscale",
@@ -62,11 +62,11 @@ test_ds = tf.keras.preprocessing.image_dataset_from_directory(
 train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
 validation_ds = validation_ds.prefetch(buffer_size=buffer_size).cache()
 
-plt.figure(figsize=(17, 20))
+plt.figure(figsize=(20, 17))
 for images, labels in train_ds.take(1):
     for i in range(25):
         ax = plt.subplot(5, 5, i + 1)
-        plt.imshow(images[i].numpy().astype("uint8"))
+        plt.imshow(images[i].numpy().astype("uint8"), cmap=plt.cm.gray)
         for j in range(len(CLASS_NAMES)):
             if labels.numpy()[i][j] > 0:
                 plt.title(CLASS_NAMES[j])
