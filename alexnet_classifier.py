@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 import os
 import time
 
-image_size = (227, 190)
+image_size = (190, 227)
 batch_size = 512
 num_classes = 5
-epochs = 200
+epochs = 300
 buffer_size = 4
 
 # (train_images, train_labels), (test_images, test_labels) = keras.datasets.cifar10.load_data()
@@ -62,7 +62,7 @@ test_ds = tf.keras.preprocessing.image_dataset_from_directory(
 train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
 validation_ds = validation_ds.prefetch(buffer_size=buffer_size).cache()
 
-plt.figure(figsize=(17, 20))
+plt.figure(figsize=(20, 20))
 for images, labels in train_ds.take(1):
     for i in range(25):
         ax = plt.subplot(5, 5, i + 1)
