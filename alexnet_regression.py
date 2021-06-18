@@ -6,16 +6,47 @@ import os
 import time
 
 image_size = (190, 227)
-batch_size = 1
-num_classes = 5
-epochs = 300
-buffer_size = 4
-train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression/"
-test_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression/"
+batch_size = 32
+#num_classes = 5
+epochs = 50
+#buffer_size = 2
+train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
+test_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression"
 
 train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     train_path,
     # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression",
+    image_size=image_size,
+    batch_size=batch_size,
+    validation_split=0.2,
+    subset="training",
+    seed=1337,
+    shuffle=True,
+    color_mode="grayscale",
+    label_mode=None
+)
+
+start = len(train_path) + 1
+train_hpfs = numpy.array([[float(f[start:index]) for index in [f.index("\\", start)]] for f in train_ds.file_paths])
+
+val_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    train_path,
+    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression",
+    image_size=image_size,
+    batch_size=batch_size,
+    validation_split=0.2,
+    subset="validation",
+    seed=1337,
+    shuffle=True,
+    color_mode="grayscale",
+    label_mode=None
+)
+
+val_hpfs = numpy.array([[float(f[start:index]) for index in [f.index("\\", start)]] for f in val_ds.file_paths])
+
+test_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    # "Zebrafish_Test",
+    test_path,
     image_size=image_size,
     batch_size=batch_size,
     shuffle=True,
@@ -23,21 +54,12 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     label_mode=None
 )
 
-start = len(train_path)
-train_hpfs = numpy.array([[float(f[start:index]) for index in [f.index("\\", start)]] for f in train_ds.file_paths])
-
-test_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    # "Zebrafish_Test",
-    test_path,
-    image_size=image_size,
-    batch_size=batch_size,
-    color_mode="grayscale",
-    labels="inferred",
-    label_mode="categorical"
-)
-
-start = len(test_path)
+start = len(test_path) + 1
 test_hpfs = numpy.array([[float(f[start:index]) for index in [f.index("\\", start)]] for f in test_ds.file_paths])
+
+auto = tf.data.AUTOTUNE
+train_ds = train_ds.prefetch(buffer_size=auto).cache()
+test_ds = test_ds.prefetch(buffer_size=auto).cache()
 
 # plt.figure(figsize=(20, 20))
 # for images, labels in train_ds.take(1):
@@ -93,7 +115,9 @@ model.compile(
     metrics=['mean_absolute_error']
 )
 
-history = model.fit(train_ds, train_hpfs,
+history = model.fit(train_ds.as_numpy_iterator(), train_hpfs,
                     epochs=epochs,
                     validation_freq=1,
-                    validation_split=0.2)
+                    validation_data=(val_ds.as_numpy_iterator(), val_hpfs))
+
+model.evaluate(test_ds.as_numpy_iterator(), test_hpfs)
