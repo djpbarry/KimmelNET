@@ -2,64 +2,47 @@ import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
 import numpy
+import skimage
+import sklearn
 import os
 import time
 
 image_size = (190, 227)
 batch_size = 32
-#num_classes = 5
+# num_classes = 5
 epochs = 50
-#buffer_size = 2
+# buffer_size = 2
 train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 test_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression"
 
-train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    train_path,
-    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression",
-    image_size=image_size,
-    batch_size=batch_size,
-    validation_split=0.2,
-    subset="training",
-    seed=1337,
-    shuffle=True,
-    color_mode="grayscale",
-    label_mode=None
-)
+
+def load_images(inputDir, size):
+    images = []
+    paths = []
+    for folder_name in os.listdir(inputDir):
+        for fname in os.listdir(os.path.join(inputDir, folder_name)):
+            fpath = os.path.join(inputDir, folder_name, fname)
+            image = skimage.io.imread(fpath)
+            image = skimage.transform.resize(image, size)
+            images.append(image)
+            paths.append(fpath)
+    return numpy.array(images), paths
+
+
+images, paths = load_images(train_path, image_size)
 
 start = len(train_path) + 1
-train_hpfs = numpy.array([[float(f[start:index]) for index in [f.index("\\", start)]] for f in train_ds.file_paths])
+hpfs = numpy.array([[float(f[start:index]) for index in [f.index("\\", start)]] for f in paths])
 
-val_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    train_path,
-    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression",
-    image_size=image_size,
-    batch_size=batch_size,
-    validation_split=0.2,
-    subset="validation",
-    seed=1337,
-    shuffle=True,
-    color_mode="grayscale",
-    label_mode=None
-)
+train_images, val_images, train_hpfs, val_hpfs = sklearn.model_selection.train_test_split(images, hpfs, test_size=0.2)
 
-val_hpfs = numpy.array([[float(f[start:index]) for index in [f.index("\\", start)]] for f in val_ds.file_paths])
-
-test_ds = tf.keras.preprocessing.image_dataset_from_directory(
-    # "Zebrafish_Test",
-    test_path,
-    image_size=image_size,
-    batch_size=batch_size,
-    shuffle=True,
-    color_mode="grayscale",
-    label_mode=None
-)
-
+test_images, test_paths = load_images(test_path, image_size)
 start = len(test_path) + 1
-test_hpfs = numpy.array([[float(f[start:index]) for index in [f.index("\\", start)]] for f in test_ds.file_paths])
+test_hpfs = numpy.array([[float(f[start:index]) for index in [f.index("\\", start)]] for f in test_paths])
 
-auto = tf.data.AUTOTUNE
-train_ds = train_ds.prefetch(buffer_size=auto).cache()
-test_ds = test_ds.prefetch(buffer_size=auto).cache()
+#auto = tf.data.AUTOTUNE
+#train_ds = train_ds.prefetch(buffer_size=auto).cache()
+#test_ds = test_ds.prefetch(buffer_size=auto).cache()
 
 # plt.figure(figsize=(20, 20))
 # for images, labels in train_ds.take(1):
@@ -115,9 +98,9 @@ model.compile(
     metrics=['mean_absolute_error']
 )
 
-history = model.fit(train_ds.as_numpy_iterator(), train_hpfs,
+history = model.fit(train_images, train_hpfs,
                     epochs=epochs,
                     validation_freq=1,
-                    validation_data=(val_ds.as_numpy_iterator(), val_hpfs))
+                    validation_data=(val_images, val_hpfs))
 
-model.evaluate(test_ds.as_numpy_iterator(), test_hpfs)
+model.evaluate(test_images, test_hpfs)
