@@ -2,8 +2,9 @@ import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
 import numpy
-import skimage
 import sklearn
+import skimage.io as skio
+import skimage.transform as skt
 import os
 import time
 
@@ -15,15 +16,15 @@ epochs = 50
 train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 test_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression"
 
-
 def load_images(inputDir, size):
     images = []
     paths = []
     for folder_name in os.listdir(inputDir):
+        print("Processing " + os.path.join(inputDir, folder_name))
         for fname in os.listdir(os.path.join(inputDir, folder_name)):
             fpath = os.path.join(inputDir, folder_name, fname)
-            image = skimage.io.imread(fpath)
-            image = skimage.transform.resize(image, size)
+            image = skio.imread(fpath)
+            image = skt.resize(image, size)
             images.append(image)
             paths.append(fpath)
     return numpy.array(images), paths
