@@ -1,12 +1,12 @@
-import tensorflow as tf
-from tensorflow import keras
+import datetime
+import os
+
 import matplotlib.pyplot as plt
 import numpy
 import skimage.io as skio
 import skimage.transform as skt
 import sklearn.model_selection as sklms
-import os
-import datetime
+from tensorflow import keras
 
 image_size = (190, 227)
 batch_size = 32
@@ -91,13 +91,12 @@ x = keras.layers.Dense(4096, activation='relu')(x)
 x = keras.layers.Dropout(0.5)(x)
 x = keras.layers.Dense(4096, activation='relu')(x)
 x = keras.layers.Dropout(0.5)(x)
-outputs = keras.layers.Dense(1)(x)
+outputs = keras.layers.Dense(1, activation="linear")(x)
 model = keras.Model(inputs, outputs)
 
 model.compile(
-    loss='mse',
-    optimizer=keras.optimizers.RMSprop(),
-    metrics=['mean_absolute_error']
+    loss='mean_absolute_error',
+    optimizer=keras.optimizers.Adam()
 )
 
 history = model.fit(train_images, train_hpfs,
