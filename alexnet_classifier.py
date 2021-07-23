@@ -1,13 +1,11 @@
+import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
-import matplotlib.pyplot as plt
-import os
-import time
 
-image_size = (227, 190)
-batch_size = 512
+image_size = (380, 454)
+batch_size = 256
 num_classes = 5
-epochs = 2000
+epochs = 200
 buffer_size = 4
 
 # (train_images, train_labels), (test_images, test_labels) = keras.datasets.cifar10.load_data()
@@ -73,49 +71,13 @@ for images, labels in train_ds.take(1):
         plt.axis("off")
 plt.savefig('sample_images.png')
 
-
-def process_images(image, label):
-    # Normalize images to have a mean of 0 and standard deviation of 1
-    image = tf.image.per_image_standardization(image)
-    # Resize images from 32x32 to 277x277
-    image = tf.image.resize(image, image_size)
-    return image, label
-
-
-# test_ds_size = tf.data.experimental.cardinality(test_ds).numpy()
-# validation_ds_size = tf.data.experimental.cardinality(validation_ds).numpy()
-
-# train_ds_size_1 = tf.data.experimental.cardinality(train_ds_1).numpy()
-# validation_ds_size_1 = tf.data.experimental.cardinality(validation_ds_1).numpy()
-
-# print("Training data size:", train_ds_size)
-# print("Test data size:", test_ds_size)
-# print("Validation data size:", validation_ds_size)
-
-# train_ds = (train_ds.map(process_images).shuffle(buffer_size=train_ds_size).batch(batch_size=batch_size, drop_remainder=True))
-# test_ds = (test_ds.map(process_images).shuffle(buffer_size=train_ds_size).batch(batch_size=32, drop_remainder=True))
-# validation_ds = (validation_ds.map(process_images).shuffle(buffer_size=train_ds_size).batch(batch_size=batch_size, drop_remainder=True))
-
-# root_logdir = os.path.join(os.curdir, "logs\\fit\\")
-
-
-# def get_run_logdir():
-#    run_id = time.strftime("run_%Y_%m_%d-%H_%M_%S")
-#    return os.path.join(root_logdir, run_id)
-
-
-# run_logdir = get_run_logdir()
-# tensorboard_cb = keras.callbacks.TensorBoard(run_logdir)
-
 strategy = tf.distribute.MirroredStrategy()
 
 with strategy.scope():
     data_augmentation = keras.Sequential(
         [
             keras.layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
-            keras.layers.experimental.preprocessing.RandomTranslation(0.2, 0.2, fill_mode="reflect",
-                                                                      interpolation="bilinear"),
-            keras.layers.experimental.preprocessing.RandomRotation(1.0, fill_mode="reflect", interpolation="bilinear")
+            keras.layers.experimental.preprocessing.RandomContrast(factor=0.2)
         ]
     )
 
@@ -148,14 +110,20 @@ with strategy.scope():
     outputs = keras.layers.Dense(num_classes, activation="softmax")(x)
     model = keras.Model(inputs, outputs)
 
-    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(learning_rate=0.0001),
+                  metrics=['accuracy'])
+
+model.summary()
+
+csv_logger = tf.keras.callbacks.CSVLogger('training.log')
 
 history = model.fit(train_ds,
                     epochs=epochs,
                     validation_data=validation_ds,
-                    validation_freq=1)
+                    validation_freq=1,
+                    callbacks=csv_logger)
 
-model.save('trained_alexnet_model')
+model.save('trained_alexnet_classification_model')
 
 plt.figure(figsize=(20, 10))
 plt.subplot(1, 2, 1)
@@ -170,6 +138,9 @@ plt.ylabel('Accuracy', fontsize=16)
 plt.plot(history.history['accuracy'], label='Training Accuracy')
 plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
 plt.legend(loc='lower right')
-plt.savefig('training_progress.png')
+plt.savefig('training_classification_progress.png')
 
-model.evaluate(test_ds)
+csv_logger = tf.keras.callbacks.CSVLogger('testing.log')
+
+model.evaluate(test_ds,
+               callbacks=csv_logger)

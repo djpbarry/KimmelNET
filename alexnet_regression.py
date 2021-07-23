@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 image_size = (190, 227)
-batch_size = 32
+batch_size = 128
 # num_classes = 5
 epochs = 200
 buffer_size = 4
@@ -39,9 +39,10 @@ train_ds = images_ds.skip(val_split).prefetch(buffer_size).cache()
 data_augmentation = keras.Sequential(
     [
         keras.layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
-        keras.layers.experimental.preprocessing.RandomTranslation(0.2, 0.2, fill_mode="reflect",
-                                                                  interpolation="bilinear"),
-        keras.layers.experimental.preprocessing.RandomRotation(1.0, fill_mode="reflect", interpolation="bilinear")
+        keras.layers.experimental.preprocessing.RandomContrast(factor=0.1)
+        #keras.layers.experimental.preprocessing.RandomTranslation(0.2, 0.2, fill_mode="reflect",
+        #                                                          interpolation="bilinear"),
+        #keras.layers.experimental.preprocessing.RandomRotation(1.0, fill_mode="reflect", interpolation="bilinear")
     ]
 )
 
@@ -72,13 +73,18 @@ model = keras.Model(inputs, outputs)
 
 model.compile(
     loss='mean_absolute_error',
-    optimizer=keras.optimizers.Adam()
+    optimizer=keras.optimizers.Adam(learning_rate=0.0001)
 )
+
+model.summary()
+
+csv_logger = tf.keras.callbacks.CSVLogger('training.log')
 
 history = model.fit(train_ds,
                     epochs=epochs,
                     validation_freq=1,
-                    validation_data=val_ds)
+                    validation_data=val_ds,
+                    callbacks=csv_logger)
 
 # print(history.history.keys())
 
