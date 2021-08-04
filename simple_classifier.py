@@ -1,14 +1,17 @@
 from tensorflow import keras
 from tensorflow.keras import layers
 import matplotlib.pyplot as plt
+import sklearn.metrics as sk_metrics
+import numpy as np
+import seaborn as sns
 
 image_size = (28, 33)
 cropped_image_size = (28, 28)
 batch_size = 256
 num_classes = 5
-epochs = 200
+epochs = 1000
 buffer_size = 4
-name = "simple_classifier_with_augmentation_and_normalisation"
+name = "simple_classifier_with_extended_augmentation_and_normalisation"
 CLASS_NAMES = ['Early', 'Early-Mid', 'Mid', 'Late-Mid', 'Late']
 
 # the data, split between train and test sets
@@ -68,7 +71,6 @@ model = keras.Sequential(
     [
         keras.Input(shape=image_size + (1,)),
         layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
-        layers.experimental.preprocessing.RandomContrast(factor=0.2),
         layers.experimental.preprocessing.Rescaling(1.0 / 255),
         layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
@@ -89,7 +91,7 @@ csv_logger = keras.callbacks.CSVLogger(name + '_training.log')
 
 history = model.fit(train_ds, epochs=epochs, validation_data=validation_ds, validation_freq=1, callbacks=csv_logger)
 
-plt.figure(figsize=(20, 10))
+plt.figure(num=1, figsize=(20, 10))
 plt.subplot(1, 2, 1)
 plt.suptitle('Optimizer : Adam', fontsize=10)
 plt.ylabel('Loss', fontsize=16)
@@ -103,7 +105,21 @@ plt.plot(history.history['accuracy'], label='Training Accuracy')
 plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
 plt.legend(loc='lower right')
 plt.savefig(name + '_classification_progress.png')
+plt.close(1)
 
-score = model.evaluate(test_ds, verbose=0)
-print("Test loss:", score[0])
-print("Test accuracy:", score[1])
+predictions = model.predict(test_ds)
+labels = np.array([])
+for x, y in test_ds:
+    labels = np.concatenate([labels, np.argmax(y.numpy(), axis=1)])
+
+confusion = sk_metrics.confusion_matrix(labels, np.argmax(predictions, axis=1))
+confusion_normalized = np.transpose(np.transpose(confusion.astype("float")) / confusion.sum(axis=1))
+axis_labels = list(CLASS_NAMES)
+plt.figure(num=2, figsize=(10, 10))
+sns.heatmap(
+    confusion_normalized, xticklabels=axis_labels, yticklabels=axis_labels,
+    cmap='Blues', annot=True, fmt='.2f', square=True)
+plt.title("Confusion matrix")
+plt.ylabel("True label")
+plt.xlabel("Predicted label")
+plt.savefig(name + '_confusion_matrix.png')
