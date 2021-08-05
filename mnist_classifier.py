@@ -3,6 +3,9 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import matplotlib.pyplot as plt
 import argparse
+import sklearn.metrics as sk_metrics
+import numpy as np
+import seaborn as sns
 
 parser = argparse.ArgumentParser()
 parser.add_argument('tmpdir', type=str)
@@ -48,8 +51,8 @@ model = keras.Sequential(
 
 model.summary()
 
-batch_size = 128
-epochs = 15
+batch_size = 32
+epochs = 1
 
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 
@@ -75,3 +78,17 @@ plt.savefig(name + '_classification_progress.png')
 score = model.evaluate(x_test, y_test, verbose=0)
 print("Test loss:", score[0])
 print("Test accuracy:", score[1])
+
+predictions = model.predict(x_test)
+
+confusion = sk_metrics.confusion_matrix(np.argmax(y_test, axis=1), np.argmax(predictions, axis=1))
+confusion_normalized = np.transpose(np.transpose(confusion.astype("float")) / confusion.sum(axis=1))
+axis_labels = list([i for i in range(10)])
+plt.figure(num=2, figsize=(10, 10))
+sns.heatmap(
+    confusion_normalized, xticklabels=axis_labels, yticklabels=axis_labels,
+    cmap='Blues', annot=True, fmt='.2f', square=True)
+plt.title("Confusion matrix")
+plt.ylabel("True label")
+plt.xlabel("Predicted label")
+plt.savefig(name + '_confusion_matrix.png')

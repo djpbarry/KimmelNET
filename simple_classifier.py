@@ -9,7 +9,7 @@ image_size = (28, 33)
 cropped_image_size = (28, 28)
 batch_size = 256
 num_classes = 5
-epochs = 1000
+epochs = 500
 buffer_size = 4
 name = "simple_classifier_with_extended_augmentation_and_normalisation"
 CLASS_NAMES = ['Early', 'Early-Mid', 'Mid', 'Late-Mid', 'Late']
@@ -107,12 +107,17 @@ plt.legend(loc='lower right')
 plt.savefig(name + '_classification_progress.png')
 plt.close(1)
 
-predictions = model.predict(test_ds)
+score = model.evaluate(test_ds, verbose=1)
+print("Test loss:", score[0])
+print("Test accuracy:", score[1])
+
 labels = np.array([])
+predictions = np.array([])
 for x, y in test_ds:
+    predictions = np.concatenate([predictions, np.argmax(model.predict(x, verbose=1), axis=1)])
     labels = np.concatenate([labels, np.argmax(y.numpy(), axis=1)])
 
-confusion = sk_metrics.confusion_matrix(labels, np.argmax(predictions, axis=1))
+confusion = sk_metrics.confusion_matrix(labels, predictions)
 confusion_normalized = np.transpose(np.transpose(confusion.astype("float")) / confusion.sum(axis=1))
 axis_labels = list(CLASS_NAMES)
 plt.figure(num=2, figsize=(10, 10))
