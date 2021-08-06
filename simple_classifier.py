@@ -11,7 +11,7 @@ batch_size = 256
 num_classes = 5
 epochs = 500
 buffer_size = 4
-name = "simple_classifier_with_extended_augmentation_and_normalisation"
+name = "simple_classifier_with_augmentation_and_normalisation_and_batchnormalisation"
 CLASS_NAMES = ['Early', 'Early-Mid', 'Mid', 'Late-Mid', 'Late']
 
 # the data, split between train and test sets
@@ -74,8 +74,10 @@ model = keras.Sequential(
         layers.experimental.preprocessing.Rescaling(1.0 / 255),
         layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+        layers.BatchNormalization(),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        layers.BatchNormalization(),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         layers.Dropout(0.5),
