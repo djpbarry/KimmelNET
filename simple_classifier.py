@@ -60,7 +60,7 @@ plt.figure(figsize=(20, 17))
 for images, labels in train_ds.take(1):
     for i in range(25):
         ax = plt.subplot(5, 5, i + 1)
-        plt.imshow(images[i].numpy().astype("uint8"), cmap=plt.cm.gray)
+        plt.imshow(images[i].numpy().astype("uint8"))
         for j in range(len(CLASS_NAMES)):
             if labels.numpy()[i][j] > 0:
                 plt.title(CLASS_NAMES[j])
