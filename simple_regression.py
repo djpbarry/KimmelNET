@@ -1,11 +1,11 @@
 import os
+from datetime import datetime
+
+import matplotlib.pyplot as plt
+import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-import matplotlib.pyplot as plt
-import sklearn.metrics as sk_metrics
-import numpy as np
-import seaborn as sns
 
 image_size = (112, 134)
 cropped_image_size = (112, 112)
@@ -13,11 +13,15 @@ batch_size = 256
 num_classes = 5
 epochs = 500
 buffer_size = 4
-name = "simple_regression_with_augmentation_and_normalisation_and_image_size_112"
+name = "simple_regression"
 train_path = "Zebrafish_Train_Regression"
 test_path = "Zebrafish_Test_Regression"
-#train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Subset"
-#test_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression_Subset"
+# train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Subset"
+# test_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression_Subset"
+date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+output_path = "outputs" + os.sep + name + "_" + date_time
+
+os.makedirs(output_path)
 
 
 def parse_image(filename):
@@ -29,6 +33,31 @@ def parse_image(filename):
     image = tf.image.resize(image, image_size)
     return image, label
 
+
+model = keras.Sequential(
+    [
+        keras.Input(shape=image_size + (1,)),
+        layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
+        layers.experimental.preprocessing.Rescaling(1.0 / 255),
+        layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
+        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Flatten(),
+        layers.Dropout(0.5),
+        layers.Dense(1)
+    ]
+)
+
+model.summary()
+
+with open(output_path + os.sep + name + '_model_summary.txt', 'w') as fh:
+    model.summary(print_fn=lambda x: fh.write(x + '\n'))
+
+model.compile(loss="mean_squared_error", optimizer="adam")
 
 train_list_ds = tf.data.Dataset.list_files(str(train_path + os.sep + "*" + os.sep + "*.png")).shuffle(1000)
 train_images_ds = train_list_ds.map(parse_image).batch(batch_size)
@@ -49,32 +78,10 @@ for images, labels in train_ds.take(1):
         plt.imshow(images[i].numpy().astype("uint8"))
         plt.title(labels[i].numpy())
         plt.axis("off")
-plt.savefig(name + '_sample_images.png')
+plt.savefig(output_path + os.sep + name + '_sample_images.png')
 plt.close(3)
 
-model = keras.Sequential(
-    [
-        keras.Input(shape=image_size + (1,)),
-        layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
-        layers.experimental.preprocessing.Rescaling(1.0 / 255),
-        layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
-        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(4, 4)),
-        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Flatten(),
-        layers.Dropout(0.5),
-        layers.Dense(1)
-    ]
-)
-
-model.summary()
-
-model.compile(loss="mean_squared_error", optimizer="adam")
-
-csv_logger = keras.callbacks.CSVLogger(name + '_training.log')
+csv_logger = keras.callbacks.CSVLogger(output_path + os.sep + name + '_training.log')
 
 history = model.fit(train_ds, epochs=epochs, validation_data=val_ds, validation_freq=1, callbacks=csv_logger)
 
@@ -84,7 +91,7 @@ plt.ylabel('Loss', fontsize=16)
 plt.plot(history.history['loss'], label='Training Loss')
 plt.plot(history.history['val_loss'], label='Validation Loss')
 plt.legend(loc='upper right')
-plt.savefig(name + '_training_progress.png')
+plt.savefig(output_path + os.sep + name + '_training_progress.png')
 plt.close(1)
 
 score = model.evaluate(test_ds, verbose=1)
@@ -103,4 +110,4 @@ plt.title("Prediction Accuracy")
 plt.plot(labels, predictions, 'o')
 plt.xlabel("True label")
 plt.ylabel("Predicted label")
-plt.savefig(name + '_prediction_accuracy.png')
+plt.savefig(output_path + os.sep + name + '_prediction_accuracy.png')

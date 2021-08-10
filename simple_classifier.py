@@ -1,9 +1,12 @@
-from tensorflow import keras
-from tensorflow.keras import layers
+import os
+from datetime import datetime
+
 import matplotlib.pyplot as plt
-import sklearn.metrics as sk_metrics
 import numpy as np
 import seaborn as sns
+import sklearn.metrics as sk_metrics
+from tensorflow import keras
+from tensorflow.keras import layers
 
 image_size = (112, 134)
 cropped_image_size = (112, 112)
@@ -11,13 +14,42 @@ batch_size = 256
 num_classes = 5
 epochs = 500
 buffer_size = 4
-name = "simple_classifier_with_augmentation_and_normalisation_and_image_size_112"
+name = "simple_classifier"
 CLASS_NAMES = ['Early', 'Early-Mid', 'Mid', 'Late-Mid', 'Late']
+date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+output_path = "outputs" + os.sep + name + "_" + date_time
+
+os.makedirs(output_path)
+
+model = keras.Sequential(
+    [
+        keras.Input(shape=image_size + (1,)),
+        layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
+        layers.experimental.preprocessing.Rescaling(1.0 / 255),
+        layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
+        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Flatten(),
+        layers.Dropout(0.5),
+        layers.Dense(num_classes, activation="softmax"),
+    ]
+)
+
+model.summary()
+
+with open(output_path + os.sep + name + '_model_summary.txt', 'w') as fh:
+    model.summary(print_fn=lambda x: fh.write(x + '\n'))
+
+model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
 
 # the data, split between train and test sets
 train_ds = keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Train",
-    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
+    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
     validation_split=0.2,
     subset="training",
     seed=1337,
@@ -31,7 +63,7 @@ train_ds = keras.preprocessing.image_dataset_from_directory(
 
 validation_ds = keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Train",
-    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
+    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
     validation_split=0.2,
     subset="validation",
     seed=1337,
@@ -45,7 +77,7 @@ validation_ds = keras.preprocessing.image_dataset_from_directory(
 
 test_ds = keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Test",
-    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test",
+    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test",
     image_size=image_size,
     batch_size=batch_size,
     color_mode="grayscale",
@@ -65,31 +97,9 @@ for images, labels in train_ds.take(1):
             if labels.numpy()[i][j] > 0:
                 plt.title(CLASS_NAMES[j])
         plt.axis("off")
-plt.savefig(name + '_sample_images.png')
+plt.savefig(output_path + os.sep + name + '_sample_images.png')
 
-model = keras.Sequential(
-    [
-        keras.Input(shape=image_size + (1,)),
-        layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
-        layers.experimental.preprocessing.Rescaling(1.0 / 255),
-        layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
-        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(4, 4)),
-        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Flatten(),
-        layers.Dropout(0.5),
-        layers.Dense(num_classes, activation="softmax"),
-    ]
-)
-
-model.summary()
-
-model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
-
-csv_logger = keras.callbacks.CSVLogger(name + '_training.log')
+csv_logger = keras.callbacks.CSVLogger(output_path + os.sep + name + '_training.log')
 
 history = model.fit(train_ds, epochs=epochs, validation_data=validation_ds, validation_freq=1, callbacks=csv_logger)
 
@@ -106,7 +116,7 @@ plt.ylabel('Accuracy', fontsize=16)
 plt.plot(history.history['accuracy'], label='Training Accuracy')
 plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
 plt.legend(loc='lower right')
-plt.savefig(name + '_training_progress.png')
+plt.savefig(output_path + os.sep + name + '_training_progress.png')
 plt.close(1)
 
 score = model.evaluate(test_ds, verbose=1)
@@ -129,4 +139,4 @@ sns.heatmap(
 plt.title("Confusion matrix")
 plt.ylabel("True label")
 plt.xlabel("Predicted label")
-plt.savefig(name + '_confusion_matrix.png')
+plt.savefig(output_path + os.sep + name + '_confusion_matrix.png')
