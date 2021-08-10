@@ -5,19 +5,19 @@ import sklearn.metrics as sk_metrics
 import numpy as np
 import seaborn as sns
 
-image_size = (28, 33)
-cropped_image_size = (28, 28)
+image_size = (112, 134)
+cropped_image_size = (112, 112)
 batch_size = 256
 num_classes = 5
 epochs = 500
 buffer_size = 4
-name = "simple_classifier_with_augmentation_and_normalisation_and_batchnormalisation"
+name = "simple_classifier_with_augmentation_and_normalisation_and_image_size_112"
 CLASS_NAMES = ['Early', 'Early-Mid', 'Mid', 'Late-Mid', 'Late']
 
 # the data, split between train and test sets
 train_ds = keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Train",
-    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
+    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
     validation_split=0.2,
     subset="training",
     seed=1337,
@@ -31,7 +31,7 @@ train_ds = keras.preprocessing.image_dataset_from_directory(
 
 validation_ds = keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Train",
-    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
+    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train",
     validation_split=0.2,
     subset="validation",
     seed=1337,
@@ -45,7 +45,7 @@ validation_ds = keras.preprocessing.image_dataset_from_directory(
 
 test_ds = keras.preprocessing.image_dataset_from_directory(
     "Zebrafish_Test",
-    # "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test",
+    #"Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test",
     image_size=image_size,
     batch_size=batch_size,
     color_mode="grayscale",
@@ -73,11 +73,11 @@ model = keras.Sequential(
         layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
         layers.experimental.preprocessing.Rescaling(1.0 / 255),
         layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
+        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(4, 4)),
         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
-        layers.BatchNormalization(),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
-        layers.BatchNormalization(),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         layers.Dropout(0.5),
@@ -106,7 +106,7 @@ plt.ylabel('Accuracy', fontsize=16)
 plt.plot(history.history['accuracy'], label='Training Accuracy')
 plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
 plt.legend(loc='lower right')
-plt.savefig(name + '_classification_progress.png')
+plt.savefig(name + '_training_progress.png')
 plt.close(1)
 
 score = model.evaluate(test_ds, verbose=1)

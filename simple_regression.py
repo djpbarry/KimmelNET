@@ -7,13 +7,13 @@ import sklearn.metrics as sk_metrics
 import numpy as np
 import seaborn as sns
 
-image_size = (28, 33)
-cropped_image_size = (28, 28)
+image_size = (112, 134)
+cropped_image_size = (112, 112)
 batch_size = 256
 num_classes = 5
-epochs = 10000
+epochs = 500
 buffer_size = 4
-name = "simple_regression_with_augmentation_and_normalisation"
+name = "simple_regression_with_augmentation_and_normalisation_and_image_size_112"
 train_path = "Zebrafish_Train_Regression"
 test_path = "Zebrafish_Test_Regression"
 #train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Subset"
@@ -58,6 +58,8 @@ model = keras.Sequential(
         layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
         layers.experimental.preprocessing.Rescaling(1.0 / 255),
         layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
+        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(4, 4)),
         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
