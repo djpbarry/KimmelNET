@@ -7,8 +7,8 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
-image_size = (112, 134)
-cropped_image_size = (112, 112)
+image_size = (224, 268)
+cropped_image_size = (224, 224)
 batch_size = 256
 num_classes = 5
 epochs = 500
@@ -40,11 +40,13 @@ model = keras.Sequential(
         layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
         layers.experimental.preprocessing.Rescaling(1.0 / 255),
         layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
-        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(256, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         layers.Dropout(0.5),
@@ -105,9 +107,26 @@ for x, y in test_ds:
         predictions = np.concatenate([predictions, p[i]])
     labels = np.concatenate([labels, y.numpy()])
 
+linear_model = np.polyfit(labels, predictions, 1)
+linear_model_fn = np.poly1d(linear_model)
+x_s = np.arange(4, 53)
+
 plt.figure(num=2, figsize=(10, 10))
 plt.title("Prediction Accuracy")
-plt.plot(labels, predictions, 'o')
+plt.plot(labels, predictions, 'o', markersize=3)
+plt.plot(x_s, linear_model_fn(x_s), color="red")
 plt.xlabel("True label")
 plt.ylabel("Predicted label")
 plt.savefig(output_path + os.sep + name + '_prediction_accuracy.png')
+
+np.savetxt(output_path + os.sep + name + '_predictions.csv', np.transpose(np.concatenate([[labels], [predictions]])),
+           delimiter=',', header='Labels,Predictions')
+
+errs = labels - predictions
+
+plt.figure(num=4, figsize=(10, 10))
+plt.title("Prediction Errors")
+plt.hist(errs, bins=100)
+plt.xlabel("Prediction Error")
+plt.ylabel("Frequency")
+plt.savefig(output_path + os.sep + name + '_prediction_errors.png')

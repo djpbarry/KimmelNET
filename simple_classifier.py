@@ -25,16 +25,18 @@ model = keras.Sequential(
     [
         keras.Input(shape=image_size + (1,)),
         layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
+        layers.experimental.preprocessing.RandomTranslation(height_factor=0.05, width_factor=0.05),
+        layers.experimental.preprocessing.RandomRotation(factor=0.05),
         layers.experimental.preprocessing.Rescaling(1.0 / 255),
         layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
-        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
-        layers.Dropout(0.5),
+        layers.Dropout(0.6),
         layers.Dense(num_classes, activation="softmax"),
     ]
 )
