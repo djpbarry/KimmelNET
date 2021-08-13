@@ -11,7 +11,7 @@ image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
 num_classes = 5
-epochs = 500
+epochs = 2000
 buffer_size = 4
 name = "simple_regression"
 train_path = "Zebrafish_Train_Regression"
@@ -40,12 +40,12 @@ model = keras.Sequential(
         layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
         layers.experimental.preprocessing.Rescaling(1.0 / 255),
         layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
-        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(32, kernel_size=(9, 9), activation="relu"),
+        layers.MaxPooling2D(pool_size=(5, 5)),
+        layers.Conv2D(64, kernel_size=(7, 7), activation="relu"),
+        layers.MaxPooling2D(pool_size=(4, 4)),
+        layers.Conv2D(128, kernel_size=(5, 5), activation="relu"),
+        layers.MaxPooling2D(pool_size=(3, 3)),
         layers.Conv2D(256, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
