@@ -12,7 +12,7 @@ image_size = (112, 134)
 cropped_image_size = (112, 112)
 batch_size = 256
 num_classes = 5
-epochs = 500
+epochs = 2000
 buffer_size = 4
 name = "simple_classifier"
 CLASS_NAMES = ['Early', 'Early-Mid', 'Mid', 'Late-Mid', 'Late']
@@ -29,11 +29,15 @@ model = keras.Sequential(
         layers.experimental.preprocessing.RandomRotation(factor=0.1),
         layers.experimental.preprocessing.Rescaling(1.0 / 255),
         layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
-        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(224, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(96, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(144, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         layers.Dropout(0.7),

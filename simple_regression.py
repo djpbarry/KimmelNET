@@ -14,10 +14,10 @@ num_classes = 5
 epochs = 2000
 buffer_size = 4
 name = "simple_regression"
-train_path = "Zebrafish_Train_Regression"
-test_path = "Zebrafish_Test_Regression"
-# train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Subset"
-# test_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression_Subset"
+#train_path = "Zebrafish_Train_Regression"
+#test_path = "Zebrafish_Test_Regression"
+train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Subset"
+test_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression_Subset"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -40,15 +40,13 @@ model = keras.Sequential(
         layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
         layers.experimental.preprocessing.Rescaling(1.0 / 255),
         layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
-        layers.Conv2D(16, kernel_size=(5, 5), activation="relu"),
+        layers.Conv2D(16, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(5, 5), activation="relu"),
+        layers.Conv2D(64, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(256, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         layers.Dropout(0.5),

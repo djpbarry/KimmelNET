@@ -1,4 +1,4 @@
-from keras_tuner import RandomSearch
+from keras_tuner import Hyperband
 from tensorflow import keras
 from tensorflow.keras import layers
 
@@ -19,7 +19,7 @@ def build_model(hp):
     model.add(layers.experimental.preprocessing.RandomRotation(factor=0.1))
     model.add(layers.experimental.preprocessing.Rescaling(1.0 / 255))
     model.add(layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]))
-    for i in range(hp.Int("num_layers", 2, 10)):
+    for i in range(hp.Int("num_layers", 2, 5)):
         model.add(layers.Conv2D(hp.Int("units_" + str(i), min_value=16, max_value=256, step=16), kernel_size=(3, 3),
                                 activation="relu"))
         model.add(layers.MaxPooling2D(pool_size=(2, 2)))
@@ -74,11 +74,11 @@ test_ds = keras.preprocessing.image_dataset_from_directory(
 train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
 validation_ds = validation_ds.prefetch(buffer_size=buffer_size).cache()
 
-tuner = RandomSearch(
+tuner = Hyperband(
     build_model,
     objective="val_accuracy",
-    max_trials=10,
-    executions_per_trial=3,
+    max_epochs=200,
+    factor=3,
     overwrite=True,
     directory="outputs",
     project_name=name,
@@ -89,4 +89,3 @@ tuner.search_space_summary()
 tuner.search(train_ds, epochs=epochs, validation_data=validation_ds, validation_freq=1)
 
 tuner.results_summary()
-
