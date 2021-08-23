@@ -6,7 +6,7 @@ image_size = (112, 134)
 cropped_image_size = (112, 112)
 batch_size = 256
 num_classes = 5
-epochs = 500
+epochs = 200
 buffer_size = 4
 name = "hypertune_simple_classifier"
 
