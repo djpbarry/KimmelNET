@@ -5,8 +5,8 @@ from keras_tuner import Hyperband
 from tensorflow import keras
 from tensorflow.keras import layers
 
-image_size = (112, 134)
-cropped_image_size = (112, 112)
+image_size = (224, 268)
+cropped_image_size = (224, 224)
 batch_size = 256
 epochs = 200
 buffer_size = 4
