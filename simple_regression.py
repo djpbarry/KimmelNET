@@ -40,15 +40,15 @@ model = keras.Sequential(
         layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
         layers.experimental.preprocessing.Rescaling(1.0 / 255),
         layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
-        layers.Conv2D(16, kernel_size=(5, 5), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(32, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(64, kernel_size=(5, 5), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(256, kernel_size=(3, 3), activation="relu"),
+        layers.Conv2D(224, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(112, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(144, kernel_size=(3, 3), activation="relu"),
+        layers.MaxPooling2D(pool_size=(2, 2)),
+        layers.Conv2D(144, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Flatten(),
         layers.Dropout(0.5),
@@ -132,3 +132,5 @@ plt.hist(errs, bins=100)
 plt.xlabel("Prediction Error")
 plt.ylabel("Frequency")
 plt.savefig(output_path + os.sep + name + '_prediction_errors.png')
+
+model.save(output_path + os.sep + name + '_trained_model')
