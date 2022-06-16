@@ -4,7 +4,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
+from keras import layers
 
 image_size = (224, 268)
 cropped_image_size = (224, 224)
@@ -12,8 +12,8 @@ batch_size = 256
 epochs = 2000
 buffer_size = 4
 name = "simple_regression"
-train_path = "Zebrafish_Train_Regression"
-# train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Subset"
+# train_path = "Zebrafish_Train_Regression"
+train_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -33,9 +33,9 @@ def parse_image(filename):
 model = keras.Sequential(
     [
         keras.Input(shape=image_size + (1,)),
-        layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"),
-        layers.experimental.preprocessing.Rescaling(1.0 / 255),
-        layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
+        layers.RandomFlip(mode="horizontal_and_vertical"),
+        layers.Rescaling(1.0 / 255),
+        layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
         layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(224, kernel_size=(3, 3), activation="relu"),
