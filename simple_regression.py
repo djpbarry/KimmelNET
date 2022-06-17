@@ -1,3 +1,4 @@
+import glob
 import os
 from datetime import datetime
 
@@ -11,7 +12,7 @@ cropped_image_size = (224, 224)
 batch_size = 256
 epochs = 2000
 buffer_size = 4
-name = "simple_regression"
+name = "simple_regression_bad_wells_removed"
 # train_path = "Zebrafish_Train_Regression"
 train_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -59,13 +60,22 @@ with open(output_path + os.sep + name + '_model_summary.txt', 'w') as fh:
 
 model.compile(loss="mean_squared_error", optimizer="adam")
 
-train_list_ds = tf.data.Dataset.list_files(str(train_path + os.sep + "*" + os.sep + "*.png")).shuffle(1000)
+train_files = glob.glob(train_path + os.sep + "*" + os.sep + "*.png")
+filtered_train_files = [r for r in train_files if
+                        "FishDev_WT_02_3-A4" not in r and
+                        "FishDev_WT_02_3-G4" not in r and
+                        "20201127_FishDev_WT_28.5_1-C6" not in r and
+                        "FishDev_WT_02_3-D6" not in r and
+                        "FishDev_WT_01_1-D6" not in r and
+                        "FishDev_WT_01_1-H8" not in r]
+
+train_list_ds = tf.data.Dataset.from_tensor_slices(filtered_train_files).shuffle(1000)
 train_images_ds = train_list_ds.map(parse_image).batch(batch_size)
 val_split = int(0.2 * len(train_images_ds))
-val_ds = train_images_ds.take(val_split).prefetch(buffer_size).cache()
-train_ds = train_images_ds.skip(val_split).prefetch(buffer_size).cache()
-train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
-val_ds = val_ds.prefetch(buffer_size=buffer_size).cache()
+val_ds = train_images_ds.cache().take(val_split).prefetch(buffer_size)
+train_ds = train_images_ds.cache().skip(val_split).prefetch(buffer_size)
+train_ds = train_ds.cache().prefetch(buffer_size=buffer_size)
+val_ds = val_ds.cache().prefetch(buffer_size=buffer_size)
 
 plt.figure(num=3, figsize=(20, 17))
 for images, labels in train_ds.take(1):

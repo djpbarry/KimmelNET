@@ -1,3 +1,4 @@
+import glob
 import os
 from datetime import datetime
 
@@ -5,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+import pandas as pd
 
 image_size = (224, 268)
 cropped_image_size = (224, 224)
@@ -16,6 +18,7 @@ output_path = "outputs" + os.sep + name + "_" + date_time
 
 os.makedirs(output_path)
 
+
 def parse_image(filename):
     parts = tf.strings.split(filename, os.sep)
     label = float(parts[-2])
@@ -26,22 +29,26 @@ def parse_image(filename):
     return image, label, filename
 
 
-test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression"
-#test_path = "./test_data"
+# test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression"
+test_path = "./test_data"
 
-test_list_ds = tf.data.Dataset.list_files(str(test_path + os.sep + "*" + os.sep + "*.png")).shuffle(1000)
+test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
+filtered_test_files = [r for r in test_files if "FishDev_WT_01_1-A8-3" not in r]
+
+# test_list_ds = tf.data.Dataset.list_files(str(test_path + os.sep + "*" + os.sep + "*.png")).shuffle(1000)
+test_list_ds = tf.data.Dataset.from_tensor_slices(filtered_test_files).shuffle(1000)
 test_ds = test_list_ds.map(parse_image).batch(batch_size)
-test_ds = test_ds.prefetch(buffer_size=buffer_size).cache()
+test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
 
-model = keras.models.load_model('/home/camp/barryd/working/barryd/hpc/python/keras_image_class/outputs'
-                                '/simple_regression_2021-08-23-14-39-08/simple_regression_trained_model')
+# model = keras.models.load_model('/home/camp/barryd/working/barryd/hpc/python/zf_reg/outputs/simple_regression_2022-06'
+#                                '-15-14-11-52/simple_regression_trained_model')
 
-#model = keras.models.load_model('./simple_regression_trained_model')
+model = keras.models.load_model('./simple_regression_trained_model')
 
 model.summary()
 
-#score = model.evaluate(test_ds, verbose=1)
-#print("Test loss:", score)
+# score = model.evaluate(test_ds, verbose=1)
+# print("Test loss:", score)
 
 labels = np.array([])
 predictions = np.array([])
@@ -51,7 +58,7 @@ for x, y, z in test_ds:
     for i in range(len(p)):
         predictions = np.concatenate([predictions, p[i]])
     labels = np.concatenate([labels, y.numpy()])
-    files = np.concatenate([files, z.numpy()])
+    files = np.concatenate([files, [f.decode() for f in z.numpy()]])
 
 linear_model = np.polyfit(labels, predictions, 1)
 linear_model_fn = np.poly1d(linear_model)
@@ -65,10 +72,9 @@ plt.xlabel("True label")
 plt.ylabel("Predicted label")
 plt.savefig(output_path + os.sep + name + '_prediction_accuracy.png')
 
-np.savetxt(output_path + os.sep + name + '_predictions.csv', np.transpose(np.concatenate([[labels.astype('S')],
-                                                                                          [predictions.astype('S')],
-                                                                                          [files.astype('S')]])),
-           delimiter=',', fmt='%s', header='Label,Prediction,File', encoding='UTF-8')
+dictionary = {'Label': labels, 'Prediction': predictions, 'File': files}
+dataFrame = pd.DataFrame(dictionary)
+dataFrame.to_csv(output_path + os.sep + name + '_predictions.csv')
 
 errs = labels - predictions
 
