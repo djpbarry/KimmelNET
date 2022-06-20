@@ -37,6 +37,9 @@ filtered_test_files = [r for r in test_files if "FishDev_WT_01_1-A8-3" not in r]
 
 # test_list_ds = tf.data.Dataset.list_files(str(test_path + os.sep + "*" + os.sep + "*.png")).shuffle(1000)
 test_list_ds = tf.data.Dataset.from_tensor_slices(filtered_test_files).shuffle(1000)
+
+print("Number of images in test dataset: " + test_list_ds.cardinality().numpy())
+
 test_ds = test_list_ds.map(parse_image).batch(batch_size)
 test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
 
