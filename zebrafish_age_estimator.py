@@ -12,7 +12,7 @@ image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
 buffer_size = 4
-name = "zf_regression_test"
+name = "zf_regression_25C_test"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -29,24 +29,24 @@ def parse_image(filename):
     return image, label, filename
 
 
-# test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression"
-test_path = "./test_data"
+test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_25C"
+#test_path = "./test_data"
 
-test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
-filtered_test_files = [r for r in test_files if "FishDev_WT_01_1-A8-3" not in r]
+#test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
+#filtered_test_files = [r for r in test_files if "FishDev_WT_01_1-A8-3" not in r]
 
-# test_list_ds = tf.data.Dataset.list_files(str(test_path + os.sep + "*" + os.sep + "*.png")).shuffle(1000)
-test_list_ds = tf.data.Dataset.from_tensor_slices(filtered_test_files).shuffle(1000)
+test_list_ds = tf.data.Dataset.list_files(str(test_path + os.sep + "*" + os.sep + "*.png")).shuffle(1000)
+#test_list_ds = tf.data.Dataset.from_tensor_slices(filtered_test_files).shuffle(1000)
 
-print("Number of images in test dataset: " + test_list_ds.cardinality().numpy())
+print("Number of images in training dataset: ", test_list_ds.cardinality().numpy())
 
 test_ds = test_list_ds.map(parse_image).batch(batch_size)
 test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
 
-# model = keras.models.load_model('/home/camp/barryd/working/barryd/hpc/python/zf_reg/outputs/simple_regression_2022-06'
-#                                '-15-14-11-52/simple_regression_trained_model')
+model = keras.models.load_model('/home/camp/barryd/working/barryd/hpc/python/zf_reg/outputs/simple_regression_2022-06'
+                                '-15-14-11-52/simple_regression_trained_model')
 
-model = keras.models.load_model('./simple_regression_trained_model')
+#model = keras.models.load_model('./simple_regression_trained_model')
 
 model.summary()
 

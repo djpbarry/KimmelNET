@@ -12,7 +12,7 @@ cropped_image_size = (224, 224)
 batch_size = 256
 epochs = 500
 buffer_size = 4
-name = "simple_regression"
+name = "simple_regression_with_filtered_input"
 #train_path = "Zebrafish_Train_Regression"
 train_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -72,9 +72,9 @@ filtered_train_files = [r for r in train_files if
                          "FishDev_WT_01_1-D6" not in r and
                          "FishDev_WT_01_1-H8" not in r]
 
-train_list_ds = tf.data.Dataset.from_tensor_slices(filtered_train_files).shuffle(1000)
+#train_list_ds = tf.data.Dataset.from_tensor_slices(filtered_train_files).shuffle(1000)
 #train_list_ds = tf.data.Dataset.from_tensor_slices(train_files).shuffle(1000)
-#train_list_ds = tf.data.Dataset.list_files(str(train_path + os.sep + "*" + os.sep + "*.png")).shuffle(1000)
+train_list_ds = tf.data.Dataset.list_files(filtered_train_files).shuffle(1000)
 
 print("Number of images in training dataset: ", train_list_ds.cardinality().numpy())
 
