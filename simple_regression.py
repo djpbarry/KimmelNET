@@ -10,9 +10,9 @@ from keras import layers
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
-epochs = 500
+epochs = 2000
 buffer_size = 4
-name = "simple_regression_with_filtered_input"
+name = "simple_regression_multi_gpu"
 #train_path = "Zebrafish_Train_Regression"
 train_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -33,35 +33,8 @@ def parse_image(filename):
     image = tf.image.resize(image, image_size)
     return image, label
 
-
-model = keras.Sequential(
-    [
-        keras.Input(shape=image_size + (1,)),
-        layers.RandomFlip(mode="horizontal_and_vertical"),
-        layers.Rescaling(1.0 / 255),
-        layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
-        layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(224, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(112, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(144, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Conv2D(144, kernel_size=(3, 3), activation="relu"),
-        layers.MaxPooling2D(pool_size=(2, 2)),
-        layers.Flatten(),
-        layers.Dropout(0.5),
-        layers.Dense(1)
-    ]
-)
-
-model.summary()
-
-with open(output_path + os.sep + name + '_model_summary.txt', 'w') as fh:
-    model.summary(print_fn=lambda x: fh.write(x + '\n'))
-
-model.compile(loss="mean_squared_error", optimizer="adam")
+strategy = tf.distribute.MirroredStrategy()
+print('Number of devices: {}'.format(strategy.num_replicas_in_sync))
 
 train_files = glob.glob(train_path + os.sep + "*" + os.sep + "*.png")
 filtered_train_files = [r for r in train_files if
@@ -96,6 +69,37 @@ plt.savefig(output_path + os.sep + name + '_sample_images.png')
 plt.close(3)
 
 csv_logger = keras.callbacks.CSVLogger(output_path + os.sep + name + '_training.log')
+
+with strategy.scope():
+
+    model = keras.Sequential(
+        [
+            keras.Input(shape=image_size + (1,)),
+            layers.RandomFlip(mode="horizontal_and_vertical"),
+            layers.Rescaling(1.0 / 255),
+            layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
+            layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
+            layers.MaxPooling2D(pool_size=(2, 2)),
+            layers.Conv2D(224, kernel_size=(3, 3), activation="relu"),
+            layers.MaxPooling2D(pool_size=(2, 2)),
+            layers.Conv2D(112, kernel_size=(3, 3), activation="relu"),
+            layers.MaxPooling2D(pool_size=(2, 2)),
+            layers.Conv2D(144, kernel_size=(3, 3), activation="relu"),
+            layers.MaxPooling2D(pool_size=(2, 2)),
+            layers.Conv2D(144, kernel_size=(3, 3), activation="relu"),
+            layers.MaxPooling2D(pool_size=(2, 2)),
+            layers.Flatten(),
+            layers.Dropout(0.5),
+            layers.Dense(1)
+        ]
+    )
+
+    model.summary()
+
+    with open(output_path + os.sep + name + '_model_summary.txt', 'w') as fh:
+        model.summary(print_fn=lambda x: fh.write(x + '\n'))
+
+    model.compile(loss="mean_squared_error", optimizer="adam")
 
 history = model.fit(train_ds, epochs=epochs, validation_data=val_ds, validation_freq=1, callbacks=csv_logger)
 

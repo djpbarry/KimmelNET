@@ -12,7 +12,7 @@ image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
 buffer_size = 4
-name = "zf_regression_25C_test"
+name = "zf_regression_test_on_training_data"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -29,7 +29,7 @@ def parse_image(filename):
     return image, label, filename
 
 
-test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_25C"
+test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 #test_path = "./test_data"
 
 #test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
