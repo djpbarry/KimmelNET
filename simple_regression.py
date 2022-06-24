@@ -13,7 +13,7 @@ batch_size = 256
 epochs = 2000
 buffer_size = 4
 name = "simple_regression_multi_gpu"
-#train_path = "Zebrafish_Train_Regression"
+# train_path = "Zebrafish_Train_Regression"
 train_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
@@ -33,20 +33,50 @@ def parse_image(filename):
     image = tf.image.resize(image, image_size)
     return image, label
 
+
 strategy = tf.distribute.MirroredStrategy()
 print('Number of devices: {}'.format(strategy.num_replicas_in_sync))
 
 train_files = glob.glob(train_path + os.sep + "*" + os.sep + "*.png")
 filtered_train_files = [r for r in train_files if
-                         "FishDev_WT_02_3-A4" not in r and
-                         "FishDev_WT_02_3-G4" not in r and
-                         "20201127_FishDev_WT_28.5_1-C6" not in r and
-                         "FishDev_WT_02_3-D6" not in r and
-                         "FishDev_WT_01_1-D6" not in r and
-                         "FishDev_WT_01_1-H8" not in r]
+                        "20201127_FishDev_WT_28.5_1-C6" not in r and
+                        "20201127_FishDev_WT_28.5_1-H11" not in r and
+                        "FishDev_WT_01_1-A3" not in r and
+                        "FishDev_WT_01_1-A7" not in r and
+                        "FishDev_WT_01_1-D6" not in r and
+                        "FishDev_WT_01_1-E3" not in r and
+                        "FishDev_WT_01_1-F2" not in r and
+                        "FishDev_WT_01_1-G1" not in r and
+                        "FishDev_WT_01_1-G5" not in r and
+                        "FishDev_WT_01_1-G10" not in r and
+                        "FishDev_WT_01_1-H2" not in r and
+                        "FishDev_WT_01_1-H8" not in r and
+                        "FishDev_WT_02_3-A1" not in r and
+                        "FishDev_WT_02_3-A10" not in r and
+                        "FishDev_WT_02_3-A4" not in r and
+                        "FishDev_WT_02_3-A7" not in r and
+                        "FishDev_WT_02_3-C10" not in r and
+                        "FishDev_WT_02_3-C11" not in r and
+                        "FishDev_WT_02_3-C7" not in r and
+                        "FishDev_WT_02_3-D2" not in r and
+                        "FishDev_WT_02_3-D6" not in r and
+                        "FishDev_WT_02_3-D7" not in r and
+                        "FishDev_WT_02_3-D11" not in r and
+                        "FishDev_WT_02_3-E1" not in r and
+                        "FishDev_WT_02_3-E10" not in r and
+                        "FishDev_WT_02_3-E2" not in r and
+                        "FishDev_WT_02_3-F12" not in r and
+                        "FishDev_WT_02_3-G10" not in r and
+                        "FishDev_WT_02_3-G11" not in r and
+                        "FishDev_WT_02_3-G12" not in r and
+                        "FishDev_WT_02_3-G3" not in r and
+                        "FishDev_WT_02_3-G4" not in r and
+                        "FishDev_WT_02_3-G8" not in r and
+                        "FishDev_WT_02_3-H6" not in r and
+                        "FishDev_WT_02_3-H7" not in r]
 
-#train_list_ds = tf.data.Dataset.from_tensor_slices(filtered_train_files).shuffle(1000)
-#train_list_ds = tf.data.Dataset.from_tensor_slices(train_files).shuffle(1000)
+# train_list_ds = tf.data.Dataset.from_tensor_slices(filtered_train_files).shuffle(1000)
+# train_list_ds = tf.data.Dataset.from_tensor_slices(train_files).shuffle(1000)
 train_list_ds = tf.data.Dataset.list_files(filtered_train_files).shuffle(1000)
 
 print("Number of images in training dataset: ", train_list_ds.cardinality().numpy())
@@ -71,7 +101,6 @@ plt.close(3)
 csv_logger = keras.callbacks.CSVLogger(output_path + os.sep + name + '_training.log')
 
 with strategy.scope():
-
     model = keras.Sequential(
         [
             keras.Input(shape=image_size + (1,)),

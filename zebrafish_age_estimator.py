@@ -43,8 +43,9 @@ print("Number of images in training dataset: ", test_list_ds.cardinality().numpy
 test_ds = test_list_ds.map(parse_image).batch(batch_size)
 test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
 
-model = keras.models.load_model('/home/camp/barryd/working/barryd/hpc/python/zf_reg/outputs/simple_regression_2022-06'
-                                '-15-14-11-52/simple_regression_trained_model')
+model = keras.models.load_model('/home/camp/barryd/working/barryd/hpc/python/zf_reg/outputs'
+                                '/simple_regression_multi_gpu_2022-06-23-15-40-37'
+                                '/simple_regression_multi_gpu_trained_model')
 
 #model = keras.models.load_model('./simple_regression_trained_model')
 
