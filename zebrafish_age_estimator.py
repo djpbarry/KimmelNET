@@ -12,7 +12,7 @@ image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
 buffer_size = 4
-name = "zf_regression_test_on_training_data"
+name = "zf_regression_test_25C"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -29,13 +29,59 @@ def parse_image(filename):
     return image, label, filename
 
 
-test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
+test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_25C"
 #test_path = "./test_data"
 
-#test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
-#filtered_test_files = [r for r in test_files if "FishDev_WT_01_1-A8-3" not in r]
+test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
+filtered_test_files = [r for r in test_files if
+                       "FishDev_WT_25C_1-B2" not in r and
+                       "FishDev_WT_25C_1-B4" not in r and
+                       "FishDev_WT_25C_1-B7" not in r and
+                       "FishDev_WT_25C_1-B9" not in r and
+                       "FishDev_WT_25C_1-D8" not in r and
+                       "FishDev_WT_25C_1-E9" not in r and
+                       "FishDev_WT_25C_1-F8" not in r and
+                       "FishDev_WT_25C_1-G7" not in r and
+                       "FishDev_WT_25C_1-G11" not in r]
 
-test_list_ds = tf.data.Dataset.list_files(str(test_path + os.sep + "*" + os.sep + "*.png")).shuffle(1000)
+# filtered_test_files = [r for r in test_files if
+#                         "20201127_FishDev_WT_28.5_1-C6" not in r and
+#                         "20201127_FishDev_WT_28.5_1-H11" not in r and
+#                         "FishDev_WT_01_1-A3" not in r and
+#                         "FishDev_WT_01_1-A7" not in r and
+#                         "FishDev_WT_01_1-D6" not in r and
+#                         "FishDev_WT_01_1-E3" not in r and
+#                         "FishDev_WT_01_1-F2" not in r and
+#                         "FishDev_WT_01_1-G1" not in r and
+#                         "FishDev_WT_01_1-G5" not in r and
+#                         "FishDev_WT_01_1-G10" not in r and
+#                         "FishDev_WT_01_1-H2" not in r and
+#                         "FishDev_WT_01_1-H8" not in r and
+#                         "FishDev_WT_02_3-A1" not in r and
+#                         "FishDev_WT_02_3-A10" not in r and
+#                         "FishDev_WT_02_3-A4" not in r and
+#                         "FishDev_WT_02_3-A7" not in r and
+#                         "FishDev_WT_02_3-C10" not in r and
+#                         "FishDev_WT_02_3-C11" not in r and
+#                         "FishDev_WT_02_3-C7" not in r and
+#                         "FishDev_WT_02_3-D2" not in r and
+#                         "FishDev_WT_02_3-D6" not in r and
+#                         "FishDev_WT_02_3-D7" not in r and
+#                         "FishDev_WT_02_3-D11" not in r and
+#                         "FishDev_WT_02_3-E1" not in r and
+#                         "FishDev_WT_02_3-E10" not in r and
+#                         "FishDev_WT_02_3-E2" not in r and
+#                         "FishDev_WT_02_3-F12" not in r and
+#                         "FishDev_WT_02_3-G10" not in r and
+#                         "FishDev_WT_02_3-G11" not in r and
+#                         "FishDev_WT_02_3-G12" not in r and
+#                         "FishDev_WT_02_3-G3" not in r and
+#                         "FishDev_WT_02_3-G4" not in r and
+#                         "FishDev_WT_02_3-G8" not in r and
+#                         "FishDev_WT_02_3-H6" not in r and
+#                         "FishDev_WT_02_3-H7" not in r]
+
+test_list_ds = tf.data.Dataset.list_files(filtered_test_files).shuffle(1000)
 #test_list_ds = tf.data.Dataset.from_tensor_slices(filtered_test_files).shuffle(1000)
 
 print("Number of images in training dataset: ", test_list_ds.cardinality().numpy())
@@ -44,7 +90,7 @@ test_ds = test_list_ds.map(parse_image).batch(batch_size)
 test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
 
 model = keras.models.load_model('/home/camp/barryd/working/barryd/hpc/python/zf_reg/outputs'
-                                '/simple_regression_multi_gpu_2022-06-23-15-40-37'
+                                '/simple_regression_multi_gpu_2022-06-24-16-31-57'
                                 '/simple_regression_multi_gpu_trained_model')
 
 #model = keras.models.load_model('./simple_regression_trained_model')
