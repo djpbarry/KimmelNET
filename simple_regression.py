@@ -2,6 +2,7 @@ import glob
 import os
 from datetime import datetime
 
+import matplotlib.colors
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
@@ -10,9 +11,9 @@ from keras import layers
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
-epochs = 2000
+epochs = 500
 buffer_size = 4
-name = "simple_regression_multi_gpu"
+name = "simple_regression_multi_gpu_added_augmentation"
 # train_path = "Zebrafish_Train_Regression"
 train_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -92,7 +93,7 @@ plt.figure(num=3, figsize=(20, 17))
 for images, labels in train_ds.take(1):
     for i in range(25):
         ax = plt.subplot(5, 5, i + 1)
-        plt.imshow(images[i].numpy().astype("uint8"))
+        plt.imshow(images[i].numpy().astype("uint8"), cmap="gray")
         plt.title(labels[i].numpy())
         plt.axis("off")
 plt.savefig(output_path + os.sep + name + '_sample_images.png')
@@ -104,7 +105,9 @@ with strategy.scope():
     model = keras.Sequential(
         [
             keras.Input(shape=image_size + (1,)),
+            layers.RandomTranslation(height_factor=0.0, width_factor=0.05),
             layers.RandomFlip(mode="horizontal_and_vertical"),
+            layers.RandomContrast(factor=0.1),
             layers.Rescaling(1.0 / 255),
             layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
             layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
