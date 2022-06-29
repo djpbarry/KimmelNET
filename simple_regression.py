@@ -2,18 +2,20 @@ import glob
 import os
 from datetime import datetime
 
-import matplotlib.colors
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
 from keras import layers
 
+import definitions
+
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
-epochs = 500
+epochs = 2000
 buffer_size = 4
-name = "simple_regression_multi_gpu_added_augmentation"
+name = "simple_regression_" + definitions.name
+
 # train_path = "Zebrafish_Train_Regression"
 train_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -131,7 +133,7 @@ with strategy.scope():
     with open(output_path + os.sep + name + '_model_summary.txt', 'w') as fh:
         model.summary(print_fn=lambda x: fh.write(x + '\n'))
 
-    model.compile(loss="mean_squared_error", optimizer="adam")
+    model.compile(loss="mean_squared_error", optimizer=keras.optimizers.Adam(learning_rate=0.0005))
 
 history = model.fit(train_ds, epochs=epochs, validation_data=val_ds, validation_freq=1, callbacks=csv_logger)
 
