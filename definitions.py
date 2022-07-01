@@ -1,1 +1,2 @@
-name = "multi_gpu_added_augmentation_and_slow_learner"
+name = "multi_gpu_added_augmentation"
+test_source_folder: str = "Zebrafish_Test_Regression"

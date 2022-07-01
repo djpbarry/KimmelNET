@@ -14,7 +14,7 @@ image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
 buffer_size = 4
-name = "zf_regression_test_25C_" + definitions.name
+name = definitions.test_source_folder + "_" + definitions.name
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -31,7 +31,7 @@ def parse_image(filename):
     return image, label, filename
 
 
-test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_25C"
+test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/" + definitions.test_source_folder
 # test_path = "./test_data"
 
 test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
@@ -90,8 +90,8 @@ test_ds = test_list_ds.map(parse_image).batch(batch_size)
 test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
 
 model = keras.models.load_model('/home/camp/barryd/working/barryd/hpc/python/zf_reg/outputs'
-                                '/simple_regression_multi_gpu_added_augmentation_2022-06-28-13-45-31'
-                                '/simple_regression_multi_gpu_added_augmentation_trained_model')
+                                '/simple_regression_multi_gpu_added_augmentation_and_slow_learner_2022-06-29-09-21-10'
+                                '/simple_regression_multi_gpu_added_augmentation_and_slow_learner_trained_model')
 
 # model = keras.models.load_model('./simple_regression_trained_model')
 

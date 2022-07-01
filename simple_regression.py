@@ -133,7 +133,7 @@ with strategy.scope():
     with open(output_path + os.sep + name + '_model_summary.txt', 'w') as fh:
         model.summary(print_fn=lambda x: fh.write(x + '\n'))
 
-    model.compile(loss="mean_squared_error", optimizer=keras.optimizers.Adam(learning_rate=0.0005))
+    model.compile(loss="mean_squared_error", optimizer=keras.optimizers.Adam())
 
 history = model.fit(train_ds, epochs=epochs, validation_data=val_ds, validation_freq=1, callbacks=csv_logger)
 
