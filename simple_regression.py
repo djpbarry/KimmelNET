@@ -12,7 +12,7 @@ import definitions
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
-epochs = 2000
+epochs = 1200
 buffer_size = 4
 name = "simple_regression_" + definitions.name
 

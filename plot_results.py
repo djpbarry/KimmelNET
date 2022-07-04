@@ -10,8 +10,8 @@ def func(x, a):
 
 lred = (0.85, 0.5, 0.2)
 lblue = (0.3, 0.3, 0.55)
-lred2 = (1.0, 0.65, 0.35)
-lblue2 = (0.45, 0.45, 0.7)
+lred2 = (1.0, 0.75, 0.45)
+lblue2 = (0.55, 0.65, 0.9)
 dred = (0.65, 0.3, 0.0)
 dblue = (0.0, 0.0, 0.5)
 
@@ -19,19 +19,20 @@ trainingProgressData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outp
                                        '/simple_regression_multi_gpu_added_augmentation_2022-06-28-13-45-31'
                                        '/simple_regression_multi_gpu_added_augmentation_training.log')
 wtData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                         '/zf_regression_test_multi_gpu_added_augmentation_2022-06-29-09-01-19'
-                         '/zf_regression_test_multi_gpu_added_augmentation_predictions.csv')
+                         '/Zebrafish_Test_Regression_multi_gpu_added_augmentation_2022-07-04-13-16-34'
+                         '/Zebrafish_Test_Regression_multi_gpu_added_augmentation_predictions.csv')
 mutData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                          '/zf_regression_test_25C_multi_gpu_added_augmentation_2022-06-29-10-11-43'
-                          '/zf_regression_test_25C_multi_gpu_added_augmentation_predictions.csv')
+                          '/Zebrafish_25C_multi_gpu_added_augmentation_2022-07-04-13-07-05'
+                          '/Zebrafish_25C_multi_gpu_added_augmentation_predictions.csv')
 
-plt.figure(figsize=(6.4, 4.8), dpi=200)
+plt.figure(figsize=(5.0, 5.0), dpi=200)
 plt.plot(trainingProgressData['epoch'], trainingProgressData['loss'], linewidth=1.0, color=dblue, label='Training Loss')
-plt.plot(trainingProgressData['epoch'], trainingProgressData['val_loss'], linewidth=1.0, color=dred, label='Validation Loss')
+plt.plot(trainingProgressData['epoch'], trainingProgressData['val_loss'], linewidth=1.0, color=dred,
+         label='Validation Loss')
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
-#plt.xlim(left=0, right=55)
-#plt.ylim(top=60, bottom=0)
+# plt.xlim(left=0, right=55)
+# plt.ylim(top=60, bottom=0)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
@@ -50,7 +51,7 @@ kimmel_mut = np.polynomial.polynomial.Polynomial([0, 0.805])
 mutpopt, mutpcov = curve_fit(func, mutData['Label'], mutData['Prediction'])
 x_s = np.arange(0, 53)
 
-plt.figure(figsize=(4.5, 4.5), dpi=200)
+plt.figure(figsize=(5.0, 5.0), dpi=200)
 plt.plot(wtData['Label'], wtData['Prediction'], 'o', markersize=1, alpha=0.5, mfc=lblue, mec=lblue, label='28.5C')
 plt.plot(mutData['Label'], mutData['Prediction'], 'o', markersize=1, alpha=0.5, mfc=lred, mec=lred, label='25.0C')
 plt.plot(x_s, func(x_s, wtpopt1), linewidth=1.5, color=dblue, label='28.5C fit')
@@ -65,35 +66,33 @@ plt.ylim(top=60, bottom=0)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
-wterrs = wtData['Prediction'] - wtData['Label']
+wterrs = wtData['Prediction'] - wtData['Label'] * wtpopt1
 muterrs = mutData['Prediction'] - mutData['Label'] * mutpopt
+wt_kim_errs = wtData['Prediction'] - wtData['Label']
+mut_kim_errs = mutData['Prediction'] - mutData['Label'] * 0.805
 
-errs = [wterrs, muterrs]
+errs = [wterrs, wt_kim_errs]
 
-plt.figure(figsize=(5.5, 4.5), dpi=200)
-plt.hist(errs, bins=50, color=[dblue, dred], label=['28.5C', '25.0C'], density=True)
+plt.figure(figsize=(5.0, 5.0), dpi=200)
+plt.hist(errs, bins=50, color=[dblue, lblue2], label=['Best Fit', 'Kimmel'], density=True)
 plt.xlabel("Prediction Error")
 plt.ylabel("Relative Frequency")
-plt.xlim(left=-20, right=20)
+plt.xlim(left=-15, right=15)
 plt.ylim(bottom=0, top=0.25)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
-plt.figure(figsize=(5.5, 4.5), dpi=200)
-plt.hist(wterrs, bins=100, color=dblue, density=True, alpha=0.7)
+errs = [muterrs, mut_kim_errs]
+
+plt.figure(figsize=(5.0, 5.0), dpi=200)
+plt.hist(errs, bins=50, color=[dred, lred2], label=['Best Fit', 'Kimmel'], density=True)
 plt.xlabel("Prediction Error")
-plt.ylabel("Frequency")
-plt.xlim(left=-20, right=20)
+plt.ylabel("Relative Frequency")
+plt.xlim(left=-15, right=15)
 plt.ylim(bottom=0, top=0.25)
+plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
-plt.figure(figsize=(5.5, 4.5), dpi=200)
-plt.hist(muterrs, bins=100, color=dred, density=True, alpha=0.7)
-plt.xlabel("Prediction Error")
-plt.ylabel("Frequency")
-plt.xlim(left=-20, right=20)
-plt.ylim(bottom=0, top=0.25)
-plt.show()
 
 mMin = 1
 mMax = -1
@@ -147,7 +146,7 @@ for i in range(10000):
 muty3 = mMin * x_s
 muty4 = mMax * x_s
 
-plt.figure(figsize=(4.5, 4.5), dpi=200)
+plt.figure(figsize=(5.0, 5.0), dpi=200)
 plt.fill_between(x_s, wty3, wty4, color=lblue2, label='28.5C Uncertainty Band 1')
 plt.fill_between(x_s, wty1, wty2, color=lblue, label='28.5C Uncertainty Band 2')
 plt.plot(x_s, func(x_s, wtpopt1), linewidth=1.5, color=dblue, label='28.5C fit')
