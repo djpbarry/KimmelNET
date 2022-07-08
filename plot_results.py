@@ -16,14 +16,14 @@ dred = (0.65, 0.3, 0.0)
 dblue = (0.0, 0.0, 0.5)
 
 trainingProgressData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                                       '/simple_regression_multi_gpu_added_augmentation_2022-06-28-13-45-31'
+                                       '/simple_regression_multi_gpu_added_augmentation_2022-07-04-13-07-05'
                                        '/simple_regression_multi_gpu_added_augmentation_training.log')
 wtData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                         '/Zebrafish_Test_Regression_multi_gpu_added_augmentation_2022-07-04-13-16-34'
-                         '/Zebrafish_Test_Regression_multi_gpu_added_augmentation_predictions.csv')
+                         '/Zebrafish_Test_Regression_Downsized_with_BG_multi_gpu_added_augmentation_2022-07-08-11-19-18'
+                         '/Zebrafish_Test_Regression_Downsized_with_BG_multi_gpu_added_augmentation_predictions.csv')
 mutData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                          '/Zebrafish_25C_multi_gpu_added_augmentation_2022-07-04-13-07-05'
-                          '/Zebrafish_25C_multi_gpu_added_augmentation_predictions.csv')
+                          '/Zebrafish_25C_Downsized_with_BG_multi_gpu_added_augmentation_2022-07-08-11-33-19'
+                          '/Zebrafish_25C_Downsized_with_BG_multi_gpu_added_augmentation_predictions.csv')
 
 plt.figure(figsize=(5.0, 5.0), dpi=200)
 plt.plot(trainingProgressData['epoch'], trainingProgressData['loss'], linewidth=1.0, color=dblue, label='Training Loss')

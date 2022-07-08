@@ -1,2 +1,2 @@
 name = "multi_gpu_added_augmentation"
-test_source_folder: str = "Zebrafish_Test_Regression"
+test_source_folder: str = "Zebrafish_Test_Regression_Downsized"

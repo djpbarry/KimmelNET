@@ -90,7 +90,7 @@ test_ds = test_list_ds.map(parse_image).batch(batch_size)
 test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
 
 model = keras.models.load_model('/home/camp/barryd/working/barryd/hpc/python/zf_reg/outputs'
-                                '/simple_regression_multi_gpu_added_augmentation_2022-07-01-11-04-56'
+                                '/simple_regression_multi_gpu_added_augmentation_2022-07-04-13-07-05'
                                 '/simple_regression_multi_gpu_added_augmentation_trained_model')
 
 # model = keras.models.load_model('./simple_regression_trained_model')
