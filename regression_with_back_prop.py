@@ -102,7 +102,7 @@ for x, y, z in test_ds:
     grads = tape.gradient(result, x)
     filenames = [f.decode() for f in z.numpy()]
     for g in range(len(grads)):
-        np.savetxt(output_path + os.sep + name + os.path.split(filenames[g])[1] + '_saliency_map.txt', grads[g, :, :, 0])
+        np.savetxt(output_path + os.sep + os.path.split(filenames[g])[1] + '_saliency_map.txt', grads[g, :, :, 0])
 
 #plot_maps(norm_flat_image(grads[0]), norm_flat_image(input_img[0]))
 
