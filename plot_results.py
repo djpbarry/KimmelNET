@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas
+from scipy.stats import sem
 from scipy.optimize import curve_fit
+from sklearn.metrics import r2_score
 
 
 def func(x, a):
@@ -41,6 +43,8 @@ wt_linear_model_fn = np.poly1d(wt_linear_model)
 kimmel_wt = np.polynomial.polynomial.Polynomial([0, 1])
 wtpopt1, wtpcov1 = curve_fit(func, wtData['Label'], wtData['Prediction'])
 
+r2 = r2_score(wtData['Prediction'], func(wtData['Label'], wtpopt1))
+
 # print(wtpopt1, np.sqrt(np.diag(wtpcov1)))
 
 # wty1 = (wtpopt1 - np.sqrt(np.diag(wtpcov1))) * x_s
@@ -50,6 +54,8 @@ mut_linear_model_fn = np.poly1d(mut_linear_model)
 kimmel_mut = np.polynomial.polynomial.Polynomial([0, 0.805])
 mutpopt, mutpcov = curve_fit(func, mutData['Label'], mutData['Prediction'])
 x_s = np.arange(0, 53)
+
+r2 = r2_score(mutData['Prediction'], func(mutData['Label'], mutpopt))
 
 plt.figure(figsize=(5.0, 5.0), dpi=200)
 plt.plot(wtData['Label'], wtData['Prediction'], 'o', markersize=1, alpha=0.5, mfc=lblue, mec=lblue, label='28.5C')
@@ -67,7 +73,13 @@ plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
 wterrs = wtData['Prediction'] - wtData['Label'] * wtpopt1
+print(np.mean(wterrs))
+print(sem(wterrs))
+print(np.std(wterrs))
 muterrs = mutData['Prediction'] - mutData['Label'] * mutpopt
+print(np.mean(muterrs))
+print(sem(muterrs))
+print(np.std(muterrs))
 wt_kim_errs = wtData['Prediction'] - wtData['Label']
 mut_kim_errs = mutData['Prediction'] - mutData['Label'] * 0.805
 
