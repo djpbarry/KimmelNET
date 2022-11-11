@@ -19,11 +19,11 @@ trainingProgressData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outp
                                        '/simple_regression_multi_gpu_added_augmentation_2022-07-04-13-07-05'
                                        '/simple_regression_multi_gpu_added_augmentation_training.log')
 wtData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                         '/Zebrafish_Test_Regression_Downsized_with_BG_multi_gpu_added_augmentation_2022-07-08-11-19-18'
-                         '/Zebrafish_Test_Regression_Downsized_with_BG_multi_gpu_added_augmentation_predictions.csv')
+                         '/Zebrafish_Test_Regression_Downsized_with_BG_Noisy_multi_gpu_added_augmentation_2022-07-12-16-26-02'
+                         '/Zebrafish_Test_Regression_Downsized_with_BG_Noisy_multi_gpu_added_augmentation_predictions.csv')
 mutData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                          '/Zebrafish_25C_Downsized_with_BG_multi_gpu_added_augmentation_2022-07-08-11-33-19'
-                          '/Zebrafish_25C_Downsized_with_BG_multi_gpu_added_augmentation_predictions.csv')
+                          '/Zebrafish_25C_Downsized_with_BG_Noisy_multi_gpu_added_augmentation_2022-07-13-09-33-49'
+                          '/Zebrafish_25C_Downsized_with_BG_Noisy_multi_gpu_added_augmentation_predictions.csv')
 
 plt.figure(figsize=(5.0, 5.0), dpi=200)
 plt.plot(trainingProgressData['epoch'], trainingProgressData['loss'], linewidth=1.0, color=dblue, label='Training Loss')
@@ -62,7 +62,7 @@ plt.plot(x_s, kimmel_mut(x_s), linewidth=1.5, linestyle='--', color=dred, label=
 plt.xlabel("Actual HPF")
 plt.ylabel("Predicted HPF")
 plt.xlim(left=0, right=55)
-plt.ylim(top=60, bottom=0)
+plt.ylim(top=80, bottom=0)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
@@ -74,22 +74,22 @@ mut_kim_errs = mutData['Prediction'] - mutData['Label'] * 0.805
 errs = [wterrs, wt_kim_errs]
 
 plt.figure(figsize=(5.0, 5.0), dpi=200)
-plt.hist(errs, bins=50, color=[dblue, lblue2], label=['Best Fit', 'Kimmel'], density=True)
+plt.hist(errs, bins=50, range=[-40, 40], color=[dblue, lblue2], label=['Best Fit', 'Kimmel'], density=True)
 plt.xlabel("Prediction Error")
 plt.ylabel("Relative Frequency")
-plt.xlim(left=-15, right=15)
-plt.ylim(bottom=0, top=0.25)
+plt.xlim(left=-40, right=40)
+plt.ylim(bottom=0, top=0.07)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
 errs = [muterrs, mut_kim_errs]
 
 plt.figure(figsize=(5.0, 5.0), dpi=200)
-plt.hist(errs, bins=50, color=[dred, lred2], label=['Best Fit', 'Kimmel'], density=True)
+plt.hist(errs, bins=50, range=[-40, 40], color=[dred, lred2], label=['Best Fit', 'Kimmel'], density=True)
 plt.xlabel("Prediction Error")
 plt.ylabel("Relative Frequency")
-plt.xlim(left=-15, right=15)
-plt.ylim(bottom=0, top=0.25)
+plt.xlim(left=-40, right=40)
+plt.ylim(bottom=0, top=0.07)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
@@ -159,6 +159,6 @@ plt.plot(x_s, func(x_s, mutpopt), linewidth=1.5, color=dred, label='25.0C fit')
 plt.xlabel("Actual HPF")
 plt.ylabel("Predicted HPF")
 plt.xlim(left=0, right=55)
-plt.ylim(top=60, bottom=0)
+plt.ylim(top=80, bottom=0)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
