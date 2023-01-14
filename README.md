@@ -44,7 +44,7 @@ buffer_size = 4
 
 train_path = "path/to/your/training/data"
 ```
-The variables `batch_size`, `epochs` and `buffer_size` will the influence the training process. For more information on what each of these variables do, consult the Tensorflow documentation.
+The variables `batch_size`, `epochs` and `buffer_size` will the influence the training process. For more information on what each of these variables do, [consult the Tensorflow documentation](https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit).
 
 # Use KimmelNet In Your Own Python Scripts
 
