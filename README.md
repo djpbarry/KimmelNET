@@ -22,4 +22,36 @@ To test KimmelNet on your own data, the easiest thing to do is clone this repo a
 
 # Train KimmelNet On Your Own Data
 
-To train KimmelNet on your own images, you first need to organise your training data into the same folder structure used in this repo's "test_data". You can then use the [provided Python script](https://github.com/djpbarry/KimmelNET/blob/main/train_model.py) to run the training, by simply changing the `train_path` variable to specify the location of your training data.
+To train KimmelNet on your own images, you first need to organise your training data into the same folder structure used in this repo's "test_data". You can then use the [provided Python script](https://github.com/djpbarry/KimmelNET/blob/main/train_model.py) to run the training, by simply changing the `train_path` variable to specify the location of your training data:
+
+```python
+import glob
+import os
+from datetime import datetime
+
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow import keras
+from keras import layers
+
+import definitions
+
+image_size = (224, 268)
+cropped_image_size = (224, 224)
+batch_size = 256
+epochs = 1200
+buffer_size = 4
+
+train_path = "path/to/your/training/data"
+```
+The variables `batch_size`, `epochs` and `buffer_size` will the influence the training process. For more information on what each of these variables do, consult the Tensorflow documentation.
+
+# Use KimmelNet In Your Own Python Scripts
+
+To use KimmelNet independently of the scripts and notebooks in this repo, you can load and display the model summary with the following simple commands:
+```python
+from tensorflow import keras
+
+model = keras.models.load_model('./simple_regression_trained_model')
+model.summary()
+```
