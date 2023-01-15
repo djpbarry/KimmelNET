@@ -6,7 +6,7 @@
 
 This repository contains the Python implementation of automated zebrafish staging as described in the following paper:
 
-Barry DJ, Jones RA, Renshaw MJ. Automated staging of zebrafish embryos with KimmelNET.
+Barry DJ, Jones RA and Renshaw MJ. Automated staging of zebrafish embryos with KimmelNet. *bioRxiv*, 2023. doi: https://doi.org/10.1101/2023.01.13.523922
 
 # Overview
 
