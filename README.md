@@ -6,7 +6,7 @@
 
 This repository contains the Python implementation of automated zebrafish staging as described in the following paper:
 
-Barry DJ, Jones RA and Renshaw MJ. Automated staging of zebrafish embryos with KimmelNet. *bioRxiv*, 2023. doi: https://doi.org/10.1101/2023.01.13.523922
+- Barry DJ, Jones RA and Renshaw MJ. Automated staging of zebrafish embryos with KimmelNet. *bioRxiv*, 2023. doi: https://doi.org/10.1101/2023.01.13.523922
 
 # Overview
 
@@ -22,7 +22,7 @@ To test KimmelNet on your own data, the easiest thing to do is clone this repo a
 
 # Train KimmelNet On Your Own Data
 
-To train KimmelNet on your own images, you first need to organise your training data into the same folder structure used in this repo's "test_data". You can then use the [provided Python script](https://github.com/djpbarry/KimmelNET/blob/main/train_model.py) to run the training, by simply changing the `train_path` variable to specify the location of your training data:
+To train KimmelNet on your own images, you first need to organise your training data into the same folder structure used in this repo's "test_data". You can then use the [provided Python script](https://github.com/djpbarry/KimmelNET/blob/main/train_model.py) to run the training, by simply changing the `train_path` variable to specify the location of your training data - here's the first few lines of `train_model.py` with the most important variables highlighted:
 
 ```python
 import glob
@@ -36,12 +36,16 @@ from keras import layers
 
 import definitions
 
+# Training images will be resized to the following dimensions, then cropped
 image_size = (224, 268)
 cropped_image_size = (224, 224)
+
+# Consult the Tensorflow documentation for information on the following variables
 batch_size = 256
 epochs = 1200
 buffer_size = 4
 
+# Change the following variable to specify the path to your training data
 train_path = "path/to/your/training/data"
 ```
 The variables `batch_size`, `epochs` and `buffer_size` will the influence the training process. For more information on what each of these variables do, [consult the Tensorflow documentation](https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit).
