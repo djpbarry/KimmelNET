@@ -64,7 +64,7 @@ def guidedRelu(x):
     return tf.nn.relu(x), grad
 
 
-model = keras.models.load_model('Z:/working/barryd/hpc/python/zf_reg/outputs'
+model = keras.models.load_model('/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs'
                                 '/simple_regression_multi_gpu_added_augmentation_2022-07-04-13-07-05'
                                 '/simple_regression_multi_gpu_added_augmentation_trained_model')
 
@@ -78,11 +78,55 @@ for layer in layer_dict:
 
 model.summary()
 
-test_path = "Z:/working/barryd/hpc/python/keras_image_class/" + definitions.test_source_folder
+test_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/" + definitions.test_source_folder
 
 test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
 
-filtered_test_files = [r for r in test_files if "FishDev_WT_02_3-E6" in r]
+filtered_test_files = [r for r in test_files if
+                       "FishDev_WT_25C_1-B2" not in r and
+                       "FishDev_WT_25C_1-B4" not in r and
+                       "FishDev_WT_25C_1-B7" not in r and
+                       "FishDev_WT_25C_1-B9" not in r and
+                       "FishDev_WT_25C_1-D8" not in r and
+                       "FishDev_WT_25C_1-E9" not in r and
+                       "FishDev_WT_25C_1-F8" not in r and
+                       "FishDev_WT_25C_1-G7" not in r and
+                       "FishDev_WT_25C_1-G11" not in r and
+                       "20201127_FishDev_WT_28.5_1-C6" not in r and
+                       "20201127_FishDev_WT_28.5_1-H11" not in r and
+                       "FishDev_WT_01_1-A3" not in r and
+                       "FishDev_WT_01_1-A7" not in r and
+                       "FishDev_WT_01_1-D6" not in r and
+                       "FishDev_WT_01_1-E3" not in r and
+                       "FishDev_WT_01_1-F2" not in r and
+                       "FishDev_WT_01_1-G1" not in r and
+                       "FishDev_WT_01_1-G5" not in r and
+                       "FishDev_WT_01_1-G10" not in r and
+                       "FishDev_WT_01_1-H2" not in r and
+                       "FishDev_WT_01_1-H8" not in r and
+                       "FishDev_WT_02_3-A1" not in r and
+                       "FishDev_WT_02_3-A10" not in r and
+                       "FishDev_WT_02_3-A4" not in r and
+                       "FishDev_WT_02_3-A7" not in r and
+                       "FishDev_WT_02_3-C10" not in r and
+                       "FishDev_WT_02_3-C11" not in r and
+                       "FishDev_WT_02_3-C7" not in r and
+                       "FishDev_WT_02_3-D2" not in r and
+                       "FishDev_WT_02_3-D6" not in r and
+                       "FishDev_WT_02_3-D7" not in r and
+                       "FishDev_WT_02_3-D11" not in r and
+                       "FishDev_WT_02_3-E1" not in r and
+                       "FishDev_WT_02_3-E10" not in r and
+                       "FishDev_WT_02_3-E2" not in r and
+                       "FishDev_WT_02_3-F12" not in r and
+                       "FishDev_WT_02_3-G10" not in r and
+                       "FishDev_WT_02_3-G11" not in r and
+                       "FishDev_WT_02_3-G12" not in r and
+                       "FishDev_WT_02_3-G3" not in r and
+                       "FishDev_WT_02_3-G4" not in r and
+                       "FishDev_WT_02_3-G8" not in r and
+                       "FishDev_WT_02_3-H6" not in r and
+                       "FishDev_WT_02_3-H7" not in r]
 
 test_list_ds = tf.data.Dataset.list_files(filtered_test_files).shuffle(1000)
 

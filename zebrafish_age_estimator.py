@@ -33,7 +33,7 @@ def parse_image(filename):
 
 print(date_time + ': Let\'s go!')
 
-test_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/" + definitions.test_source_folder
+test_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/" + definitions.test_source_folder
 # test_path = "./test_data"
 
 test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
@@ -91,7 +91,7 @@ print("Number of images in training dataset: ", test_list_ds.cardinality().numpy
 test_ds = test_list_ds.map(parse_image).batch(batch_size)
 test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
 
-model = keras.models.load_model('/home/camp/barryd/working/barryd/hpc/python/zf_reg/outputs'
+model = keras.models.load_model('/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs'
                                 '/simple_regression_multi_gpu_added_augmentation_2022-07-04-13-07-05'
                                 '/simple_regression_multi_gpu_added_augmentation_trained_model')
 

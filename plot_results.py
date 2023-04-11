@@ -21,13 +21,13 @@ trainingProgressData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outp
                                        '/simple_regression_multi_gpu_added_augmentation_2022-07-04-13-07-05'
                                        '/simple_regression_multi_gpu_added_augmentation_training.log')
 wtData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                         '/Zebrafish_Test_Regression_Downsized_with_BG_Noisy_multi_gpu_added_augmentation_2022-07-12-16-26-02'
-                         '/Zebrafish_Test_Regression_Downsized_with_BG_Noisy_multi_gpu_added_augmentation_predictions.csv')
+                         '/20232103 ZF 15 mins 28.5 C_multi_gpu_added_augmentation_2023-04-11-15-07-06'
+                         '/20232103 ZF 15 mins 28.5 C_multi_gpu_added_augmentation_predictions.csv')
 mutData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                          '/Zebrafish_25C_Downsized_with_BG_Noisy_multi_gpu_added_augmentation_2022-07-13-09-33-49'
-                          '/Zebrafish_25C_Downsized_with_BG_Noisy_multi_gpu_added_augmentation_predictions.csv')
+                          '/20232803 ZF 15 mins 25_multi_gpu_added_augmentation_2023-04-11-15-17-08'
+                          '/20232803 ZF 15 mins 25_multi_gpu_added_augmentation_predictions.csv')
 
-plt.figure(figsize=(5.0, 5.0), dpi=200)
+plt.figure(figsize=(9.0, 3.0), dpi=200)
 plt.plot(trainingProgressData['epoch'], trainingProgressData['loss'], linewidth=1.0, color=dblue, label='Training Loss')
 plt.plot(trainingProgressData['epoch'], trainingProgressData['val_loss'], linewidth=1.0, color=dred,
          label='Validation Loss')
@@ -68,7 +68,7 @@ plt.plot(x_s, kimmel_mut(x_s), linewidth=1.5, linestyle='--', color=dred, label=
 plt.xlabel("Actual HPF")
 plt.ylabel("Predicted HPF")
 plt.xlim(left=0, right=55)
-plt.ylim(top=80, bottom=0)
+plt.ylim(top=60, bottom=0)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
@@ -159,18 +159,18 @@ muty3 = mMin * x_s
 muty4 = mMax * x_s
 
 plt.figure(figsize=(5.0, 5.0), dpi=200)
-plt.fill_between(x_s, wty3, wty4, color=lblue2, label='28.5C Uncertainty Band 1')
-plt.fill_between(x_s, wty1, wty2, color=lblue, label='28.5C Uncertainty Band 2')
+plt.fill_between(x_s, wty3, wty4, color=lblue2, label='28.5C Outer Confidence Interval')
+plt.fill_between(x_s, wty1, wty2, color=lblue, label='28.5C Inner Confidence Interval')
 plt.plot(x_s, func(x_s, wtpopt1), linewidth=1.5, color=dblue, label='28.5C fit')
 plt.plot(x_s, kimmel_wt(x_s), linewidth=1.5, linestyle='--', color=dblue, label='28.5C Kimmel')
-plt.fill_between(x_s, muty3, muty4, color=lred2, label='25.0C Uncertainty Band 1')
-plt.fill_between(x_s, muty1, muty2, color=lred, label='25.0C Uncertainty Band 2')
+plt.fill_between(x_s, muty3, muty4, color=lred2, label='25.0C Outer Confidence Interval')
+plt.fill_between(x_s, muty1, muty2, color=lred, label='25.0C Inner Confidence Interval')
 plt.plot(x_s, kimmel_mut(x_s), linewidth=1.5, linestyle='--', color=dred, label='25.0C Kimmel')
 plt.plot(x_s, func(x_s, mutpopt), linewidth=1.5, color=dred, label='25.0C fit')
 
 plt.xlabel("Actual HPF")
 plt.ylabel("Predicted HPF")
 plt.xlim(left=0, right=55)
-plt.ylim(top=80, bottom=0)
-plt.legend(fontsize=8, markerscale=1.5)
+plt.ylim(top=60, bottom=0)
+plt.legend(fontsize=8, markerscale=1.5, loc='upper left')
 plt.show()
