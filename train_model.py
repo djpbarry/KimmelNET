@@ -4,8 +4,8 @@ from datetime import datetime
 
 import matplotlib.pyplot as plt
 import tensorflow as tf
-from tensorflow import keras
 from keras import layers
+from tensorflow import keras
 
 import definitions
 
@@ -17,7 +17,7 @@ buffer_size = 4
 name = "simple_regression_" + definitions.name
 
 # train_path = "Zebrafish_Train_Regression"
-train_path = "/home/camp/barryd/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
+train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -107,9 +107,13 @@ with strategy.scope():
     model = keras.Sequential(
         [
             keras.Input(shape=image_size + (1,)),
+            layers.RandomZoom(height_factor=0.5, fill_mode='reflect', interpolation='bilinear'),
             layers.RandomTranslation(height_factor=0.0, width_factor=0.05),
             layers.RandomFlip(mode="horizontal_and_vertical"),
-            layers.RandomContrast(factor=0.1),
+            layers.RandomRotation(factor=0.5, fill_mode='reflect', interpolation='bilinear'),
+            layers.RandomBrightness(factor=0.5),
+            layers.RandomContrast(factor=0.5),
+            layers.GaussianNoise(stddev=20.0),
             layers.Rescaling(1.0 / 255),
             layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
             layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
