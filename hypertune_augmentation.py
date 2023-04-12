@@ -13,13 +13,13 @@ import definitions
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
-epochs = 1200
+epochs = 100
 buffer_size = 4
-name = "simple_regression_" + definitions.name
+name = "hypertuning_augmentation"
 
 # train_path = "Zebrafish_Train_Regression"
-#train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
-train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
+train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
+#train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
