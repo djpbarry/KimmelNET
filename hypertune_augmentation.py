@@ -40,12 +40,12 @@ def parse_image(filename):
 
 
 def build_model(hp):
-    zoomFactor = hp.Float('zoom_factor', min_value=0.1, max_value=0.5)
-    transFactor = hp.Float('translation_factor', min_value=0.05, max_value=0.1)
-    rotationFactor = hp.Float('rotation_factor', min_value=0.01, max_value=0.5)
-    brightnessFactor = hp.Float('brightness_factor', min_value=0.1, max_value=0.5)
-    contrastFactor = hp.Float('contrast_factor', min_value=0.1, max_value=0.5)
-    noiseFactor = hp.Int('noise_factor', min_value=10, max_value=50)
+    zoomFactor = hp.Float('zoom_factor', min_value=0.1, max_value=0.5, step=0.01)
+    transFactor = hp.Float('translation_factor', min_value=0.05, max_value=0.1, step=0.001)
+    rotationFactor = hp.Float('rotation_factor', min_value=0.01, max_value=0.5, step=0.001)
+    brightnessFactor = hp.Float('brightness_factor', min_value=0.1, max_value=0.5, step=0.1)
+    contrastFactor = hp.Float('contrast_factor', min_value=0.1, max_value=0.5, step=0.1)
+    noiseFactor = hp.Int('noise_factor', min_value=10, max_value=50, step=2)
     strategy = tf.distribute.MirroredStrategy()
     print('Number of devices: {}'.format(strategy.num_replicas_in_sync))
     with strategy.scope():
@@ -150,8 +150,9 @@ csv_logger = keras.callbacks.CSVLogger(output_path + os.sep + name + '_training.
 tuner = keras_tuner.Hyperband(
     build_model,
     objective="val_loss",
-    max_epochs=10,
-    factor=3
+    hyperband_iterations=3,
+    overwrite=True,
+    project_name=name
 )
 
 tuner.search_space_summary()
