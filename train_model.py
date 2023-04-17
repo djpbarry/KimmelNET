@@ -12,7 +12,7 @@ import definitions
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
-epochs = 1200
+epochs = 10000
 buffer_size = 4
 name = "simple_regression_" + definitions.name
 
@@ -108,12 +108,13 @@ with strategy.scope():
         [
             keras.Input(shape=image_size + (1,)),
             layers.RandomZoom(height_factor=0.5, fill_mode='reflect', interpolation='bilinear'),
-            layers.RandomTranslation(height_factor=0.0, width_factor=0.05),
+            layers.RandomTranslation(height_factor=0.5, width_factor=0.5, fill_mode='reflect',
+                                     interpolation='nearest'),
             layers.RandomFlip(mode="horizontal_and_vertical"),
-            layers.RandomRotation(factor=0.5, fill_mode='reflect', interpolation='bilinear'),
-            layers.RandomBrightness(factor=0.5),
+            layers.RandomRotation(factor=0.5, fill_mode='reflect', interpolation='nearest'),
+            layers.RandomBrightness(factor=(-0.2, 0.6)),
             layers.RandomContrast(factor=0.5),
-            layers.GaussianNoise(stddev=20.0),
+            layers.GaussianNoise(stddev=40.0),
             layers.Rescaling(1.0 / 255),
             layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
             layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
