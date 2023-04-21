@@ -12,7 +12,7 @@ import definitions
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
-epochs = 10000
+epochs = 2000
 buffer_size = 4
 name = "simple_regression_" + definitions.name
 
@@ -102,19 +102,21 @@ plt.savefig(output_path + os.sep + name + '_sample_images.png')
 plt.close(3)
 
 csv_logger = keras.callbacks.CSVLogger(output_path + os.sep + name + '_training.log')
+checkpointer = keras.callbacks.ModelCheckpoint(filepath=output_path + os.sep + name + '{epoch}', save_best_only=False,
+                                               save_weights_only=True, save_freq=10 * batch_size)
 
 with strategy.scope():
     model = keras.Sequential(
         [
             keras.Input(shape=image_size + (1,)),
-            layers.RandomZoom(height_factor=0.5, fill_mode='reflect', interpolation='bilinear'),
-            layers.RandomTranslation(height_factor=0.5, width_factor=0.5, fill_mode='reflect',
+            layers.RandomZoom(height_factor=0.5, fill_mode='reflect', interpolation='nearest'),
+            layers.RandomTranslation(height_factor=0.25, width_factor=0.25, fill_mode='reflect',
                                      interpolation='nearest'),
             layers.RandomFlip(mode="horizontal_and_vertical"),
             layers.RandomRotation(factor=0.5, fill_mode='reflect', interpolation='nearest'),
-            layers.RandomBrightness(factor=(-0.2, 0.6)),
-            layers.RandomContrast(factor=0.5),
-            layers.GaussianNoise(stddev=40.0),
+            layers.RandomBrightness(factor=0.1),
+            layers.RandomContrast(factor=0.1),
+            layers.GaussianNoise(stddev=10.0),
             layers.Rescaling(1.0 / 255),
             layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
             layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
@@ -140,7 +142,8 @@ with strategy.scope():
 
     model.compile(loss="mean_squared_error", optimizer=keras.optimizers.Adam())
 
-history = model.fit(train_ds, epochs=epochs, validation_data=val_ds, validation_freq=1, callbacks=csv_logger)
+history = model.fit(train_ds, epochs=epochs, validation_data=val_ds, validation_freq=1,
+                    callbacks=[csv_logger, checkpointer])
 
 plt.figure(num=1, figsize=(10, 10))
 plt.title('Optimizer : Adam', fontsize=10)
