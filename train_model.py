@@ -104,19 +104,21 @@ plt.close(3)
 csv_logger = keras.callbacks.CSVLogger(output_path + os.sep + name + '_training.log')
 checkpointer = keras.callbacks.ModelCheckpoint(filepath=output_path + os.sep + name + '{epoch}', save_best_only=False,
                                                save_weights_only=True, save_freq=10 * batch_size)
+fill = 'reflect'
+inter = 'bilinear'
 
 with strategy.scope():
     model = keras.Sequential(
         [
             keras.Input(shape=image_size + (1,)),
-            layers.RandomZoom(height_factor=0.5, fill_mode='reflect', interpolation='nearest'),
-            layers.RandomTranslation(height_factor=0.25, width_factor=0.25, fill_mode='reflect',
-                                     interpolation='nearest'),
             layers.RandomFlip(mode="horizontal_and_vertical"),
-            layers.RandomRotation(factor=0.5, fill_mode='reflect', interpolation='nearest'),
-            layers.RandomBrightness(factor=0.1),
-            layers.RandomContrast(factor=0.1),
+            layers.RandomTranslation(height_factor=0.1, width_factor=0.1, fill_mode=fill,
+                                     interpolation=inter),
+            layers.RandomRotation(factor=0.1, fill_mode=fill, interpolation=inter),
+            layers.RandomZoom(height_factor=(-0.4, 0.1), fill_mode=fill, interpolation=inter),
+            layers.RandomContrast(factor=0.5),
             layers.GaussianNoise(stddev=10.0),
+            layers.RandomBrightness(factor=[-0.2, 0.6]),
             layers.Rescaling(1.0 / 255),
             layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
             layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),

@@ -17,7 +17,8 @@ name = "simple_regression_" + definitions.name
 
 # train_path = "Zebrafish_Train_Regression"
 # train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
-train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
+#train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
+train_path = "C:/Users/davej/Dropbox (The Francis Crick)/ZF_Test"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -40,7 +41,7 @@ def parse_image(filename):
 strategy = tf.distribute.MirroredStrategy()
 print('Number of devices: {}'.format(strategy.num_replicas_in_sync))
 
-train_files = glob.glob(train_path + os.sep + "30" + os.sep + "*.png")
+train_files = glob.glob(train_path + os.sep + "*" + os.sep + "*.png")
 filtered_train_files = [r for r in train_files if
                         "20201127_FishDev_WT_28.5_1-C6" not in r and
                         "20201127_FishDev_WT_28.5_1-H11" not in r and
@@ -91,16 +92,19 @@ train_ds = train_images_ds.skip(val_split).prefetch(buffer_size).cache()
 train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
 val_ds = val_ds.prefetch(buffer_size=buffer_size).cache()
 
+fill = 'reflect'
+inter = 'bilinear'
+
 model = keras.Sequential(
     [
-        #layers.RandomZoom(height_factor=[0.0, 0.5], fill_mode='reflect', interpolation='nearest'),
-        #layers.RandomTranslation(height_factor=0.25, width_factor=0.25, fill_mode='reflect',
-        #                         interpolation='nearest'),
-        #layers.RandomFlip(mode="horizontal_and_vertical"),
-        #layers.RandomRotation(factor=0.5, fill_mode='reflect', interpolation='nearest'),
-        #layers.RandomContrast(factor=0.1),
-        #layers.RandomBrightness(factor=[0.3, 0.95]),
-        layers.GaussianNoise(stddev=150.0)
+        layers.RandomFlip(mode="horizontal_and_vertical"),
+        layers.RandomTranslation(height_factor=0.1, width_factor=0.1, fill_mode=fill,
+                                 interpolation=inter),
+        layers.RandomRotation(factor=0.1, fill_mode=fill, interpolation=inter),
+        layers.RandomZoom(height_factor=(-0.4, 0.1), fill_mode=fill, interpolation=inter),
+        layers.RandomContrast(factor=0.5),
+        layers.GaussianNoise(stddev=10.0),
+        layers.RandomBrightness(factor=[-0.2, 0.6]),
         #layers.Rescaling(1.0 / 255)
     ]
 )
@@ -111,9 +115,11 @@ model = keras.Sequential(
 
 for images, labels in train_ds.take(1):
     for i in range(25):
-        augImage = model(images[i]).numpy()
+        augImage = model(images[i], training=True).numpy()
         sk.io.imsave(output_path + os.sep + str(labels[i].numpy()) + '_' + str(i) + '_augmented.tiff',
                      augImage[:, :, 0])
+        sk.io.imsave(output_path + os.sep + str(labels[i].numpy()) + '_' + str(i) + '_original.tiff',
+                     images[i].numpy())
 
 model.summary()
 
