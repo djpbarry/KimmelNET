@@ -95,6 +95,10 @@ model = keras.models.load_model('/nemo/stp/lm/working/barryd/hpc/python/zf_reg/o
                                 '/simple_regression_multi_gpu_added_augmentation_2022-07-04-13-07-05'
                                 '/simple_regression_multi_gpu_added_augmentation_trained_model')
 
+latest = tf.train.latest_checkpoint('/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/simple_regression_multi_gpu_added_augmentation_2023-04-21-15-45-29')
+
+model.load_weights(latest)
+
 # model = keras.models.load_model('./simple_regression_trained_model')
 
 model.summary()
