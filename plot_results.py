@@ -18,14 +18,8 @@ dred = (0.65, 0.3, 0.0)
 dblue = (0.0, 0.0, 0.5)
 
 trainingProgressData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                                       '/simple_regression_multi_gpu_added_augmentation_2022-07-04-13-07-05'
+                                       '/simple_regression_multi_gpu_added_augmentation_2023-05-04-21-13-19'
                                        '/simple_regression_multi_gpu_added_augmentation_training.log')
-wtData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                         '/20232103 ZF 15 mins 28.5 C_multi_gpu_added_augmentation_2023-04-11-15-07-06'
-                         '/20232103 ZF 15 mins 28.5 C_multi_gpu_added_augmentation_predictions.csv')
-mutData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                          '/20232803 ZF 15 mins 25_multi_gpu_added_augmentation_2023-04-11-15-17-08'
-                          '/20232803 ZF 15 mins 25_multi_gpu_added_augmentation_predictions.csv')
 
 plt.figure(figsize=(9.0, 3.0), dpi=200)
 plt.plot(trainingProgressData['epoch'], trainingProgressData['loss'], linewidth=1.0, color=dblue, label='Training Loss')
@@ -37,6 +31,16 @@ plt.ylabel("Loss")
 # plt.ylim(top=60, bottom=0)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
+
+wtData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
+                         '/20232103 ZF 15 mins 28.5 C_multi_gpu_added_augmentation_2023-05-12-10-47-53'
+                         '/20232103 ZF 15 mins 28.5 C_multi_gpu_added_augmentation_predictions.csv')
+mutData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
+                          '/20232803 ZF 15 mins 25_multi_gpu_added_augmentation_2023-05-12-10-44-57'
+                          '/20232803 ZF 15 mins 25_multi_gpu_added_augmentation_predictions.csv')
+
+wtData = wtData[wtData['Label'] >= 4.5]
+mutData = mutData[mutData['Label'] >= 4.5]
 
 wt_linear_model = np.polyfit(wtData['Label'], wtData['Prediction'], 1)
 wt_linear_model_fn = np.poly1d(wt_linear_model)
@@ -90,7 +94,7 @@ plt.hist(errs, bins=50, range=[-40, 40], color=[dblue, lblue2], label=['Best Fit
 plt.xlabel("Prediction Error")
 plt.ylabel("Relative Frequency")
 plt.xlim(left=-40, right=40)
-plt.ylim(bottom=0, top=0.07)
+plt.ylim(bottom=0, top=0.1)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
@@ -101,7 +105,7 @@ plt.hist(errs, bins=50, range=[-40, 40], color=[dred, lred2], label=['Best Fit',
 plt.xlabel("Prediction Error")
 plt.ylabel("Relative Frequency")
 plt.xlim(left=-40, right=40)
-plt.ylim(bottom=0, top=0.07)
+plt.ylim(bottom=0, top=0.1)
 plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
@@ -109,7 +113,7 @@ plt.show()
 mMin = 1
 mMax = -1
 for i in range(10000):
-    wtDataSubset = wtData.sample(100)
+    wtDataSubset = wtData.sample(200)
     wtpopt2, wtpcov2 = curve_fit(func, wtDataSubset['Label'], wtDataSubset['Prediction'])
     if wtpopt2 < mMin:
         mMin = wtpopt2
@@ -122,7 +126,7 @@ wty2 = mMax * x_s
 mMin = 1
 mMax = -1
 for i in range(10000):
-    wtDataSubset = wtData.sample(20)
+    wtDataSubset = wtData.sample(50)
     wtpopt3, wtpcov3 = curve_fit(func, wtDataSubset['Label'], wtDataSubset['Prediction'])
     if wtpopt3 < mMin:
         mMin = wtpopt3
@@ -135,7 +139,7 @@ wty4 = mMax * x_s
 mMin = 1
 mMax = -1
 for i in range(10000):
-    mutDataSubset = mutData.sample(100)
+    mutDataSubset = mutData.sample(200)
     mutpopt2, mutpcov2 = curve_fit(func, mutDataSubset['Label'], mutDataSubset['Prediction'])
     if mutpopt2 < mMin:
         mMin = mutpopt2
@@ -148,7 +152,7 @@ muty2 = mMax * x_s
 mMin = 1
 mMax = -1
 for i in range(10000):
-    mutDataSubset = mutData.sample(10)
+    mutDataSubset = mutData.sample(50)
     mutpopt3, mutpcov3 = curve_fit(func, mutDataSubset['Label'], mutDataSubset['Prediction'])
     if mutpopt3 < mMin:
         mMin = mutpopt3

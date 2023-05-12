@@ -92,12 +92,12 @@ test_ds = test_list_ds.map(parse_image).batch(batch_size)
 test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
 
 model = keras.models.load_model('/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs'
-                                '/simple_regression_multi_gpu_added_augmentation_2022-07-04-13-07-05'
+                                '/simple_regression_multi_gpu_added_augmentation_2023-05-04-21-13-19'
                                 '/simple_regression_multi_gpu_added_augmentation_trained_model')
 
-latest = tf.train.latest_checkpoint('/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/simple_regression_multi_gpu_added_augmentation_2023-04-21-15-45-29')
+#latest = tf.train.latest_checkpoint('/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/simple_regression_multi_gpu_added_augmentation_2023-04-21-15-45-29')
 
-model.load_weights(latest)
+#model.load_weights(latest)
 
 # model = keras.models.load_model('./simple_regression_trained_model')
 
