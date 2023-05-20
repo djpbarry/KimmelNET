@@ -17,8 +17,8 @@ name = "simple_regression_" + definitions.name
 
 # train_path = "Zebrafish_Train_Regression"
 # train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
-#train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
-train_path = "C:/Users/davej/Dropbox (The Francis Crick)/ZF_Test"
+train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression/"
+#train_path = "C:/Users/davej/Dropbox (The Francis Crick)/ZF_Test"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -41,7 +41,7 @@ def parse_image(filename):
 strategy = tf.distribute.MirroredStrategy()
 print('Number of devices: {}'.format(strategy.num_replicas_in_sync))
 
-train_files = glob.glob(train_path + os.sep + "*" + os.sep + "*.png")
+train_files = glob.glob(train_path + os.sep + "4.5" + os.sep + "*.png")
 filtered_train_files = [r for r in train_files if
                         "20201127_FishDev_WT_28.5_1-C6" not in r and
                         "20201127_FishDev_WT_28.5_1-H11" not in r and
@@ -98,14 +98,14 @@ inter = 'bilinear'
 model = keras.Sequential(
     [
         layers.RandomFlip(mode="horizontal_and_vertical"),
-        layers.RandomTranslation(height_factor=0.1, width_factor=0.1, fill_mode=fill,
+        layers.RandomTranslation(height_factor=0.0, width_factor=0.1, fill_mode=fill,
                                  interpolation=inter),
-        layers.RandomRotation(factor=0.1, fill_mode=fill, interpolation=inter),
-        layers.RandomZoom(height_factor=(-0.4, 0.1), fill_mode=fill, interpolation=inter),
-        layers.RandomContrast(factor=0.5),
+        #layers.RandomRotation(factor=0.1, fill_mode=fill, interpolation=inter),
+        layers.RandomZoom(height_factor=(-0.3, 0.1), fill_mode=fill, interpolation=inter),
         layers.GaussianNoise(stddev=10.0),
-        layers.RandomBrightness(factor=[-0.2, 0.6]),
-        #layers.Rescaling(1.0 / 255)
+        layers.RandomContrast(factor=0.75),
+        layers.RandomBrightness(factor=0.5),
+        layers.Rescaling(1.0 / 255)
     ]
 )
 
