@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from keras import layers
 from tensorflow import keras
+import numpy as np
+import skimage as sk
 
 import definitions
 
@@ -35,6 +37,25 @@ def parse_image(filename):
     # image = tf.image.convert_image_dtype(image, tf.float32)
     image = tf.image.resize(image, image_size)
     return image, label
+
+
+def random_augment_img(x, p=0.25):
+    x = x.numpy() / 255.0
+    if np.random.default_rng().uniform() > 0.5:
+        x = sk.exposure.equalize_adapthist(x)
+    if np.random.default_rng().uniform() > 0.5:
+        v_min, v_max = np.percentile(x,
+                                     (np.random.default_rng().uniform() * 5.0,
+                                      100.0 - np.random.default_rng().uniform() * 5.0))
+        x = sk.exposure.rescale_intensity(x, in_range=(v_min, v_max))
+    if np.random.default_rng().uniform() > 0.5:
+        x = sk.util.random_noise(x, var=0.01 * np.random.default_rng().uniform())
+    x = tf.convert_to_tensor(255.0 * x)
+    return x
+
+
+def random_augment(factor=0.5):
+    return layers.Lambda(lambda x: random_augment_img(x, factor))
 
 
 strategy = tf.distribute.MirroredStrategy()
@@ -84,12 +105,10 @@ train_list_ds = tf.data.Dataset.list_files(filtered_train_files).shuffle(1000)
 
 print("Number of images in training dataset: ", train_list_ds.cardinality().numpy())
 
-train_images_ds = train_list_ds.map(parse_image).batch(batch_size)
+train_images_ds = train_list_ds.map(parse_image, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size)
 val_split = int(0.2 * len(train_images_ds))
-val_ds = train_images_ds.take(val_split).prefetch(buffer_size).cache()
-train_ds = train_images_ds.skip(val_split).prefetch(buffer_size).cache()
-train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
-val_ds = val_ds.prefetch(buffer_size=buffer_size).cache()
+val_ds = train_images_ds.take(val_split).prefetch(tf.data.AUTOTUNE).cache()
+train_ds = train_images_ds.skip(val_split).prefetch(tf.data.AUTOTUNE).cache()
 
 plt.figure(num=3, figsize=(20, 17))
 for images, labels in train_ds.take(1):
@@ -112,13 +131,11 @@ with strategy.scope():
         [
             keras.Input(shape=image_size + (1,)),
             layers.RandomFlip(mode="horizontal_and_vertical"),
-            layers.RandomTranslation(height_factor=0.1, width_factor=0.1, fill_mode=fill,
+            layers.RandomTranslation(height_factor=0.0, width_factor=0.1, fill_mode=fill,
                                      interpolation=inter),
-            layers.RandomRotation(factor=0.1, fill_mode=fill, interpolation=inter),
-            layers.RandomZoom(height_factor=(-0.4, 0.1), fill_mode=fill, interpolation=inter),
-            layers.RandomContrast(factor=0.5),
-            layers.GaussianNoise(stddev=10.0),
-            layers.RandomBrightness(factor=[-0.2, 0.6]),
+            layers.RandomZoom(height_factor=(-0.3, 0.0), fill_mode=fill, interpolation=inter),
+            layers.RandomBrightness(factor=(-0.1, 0.3)),
+            random_augment(factor=0.5),
             layers.Rescaling(1.0 / 255),
             layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
             layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),

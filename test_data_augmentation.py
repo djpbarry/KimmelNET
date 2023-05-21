@@ -1,5 +1,6 @@
 import glob
 import os
+import random
 from datetime import datetime
 
 import numpy as np
@@ -40,16 +41,17 @@ def parse_image(filename):
 
 
 def random_augment_img(x, p=0.25):
-    if tf.random.uniform([]) < p:
-        # v_min, v_max = np.percentile(x.numpy(), (0.5, 99.5))
-        # x = sk.exposure.rescale_intensity(x.numpy(), in_range=(v_min, v_max))
-        x = sk.exposure.equalize_adapthist(x.numpy() / 255.0)
-        v_min, v_max = np.percentile(x, (1.0, 99.0))
+    x = x.numpy() / 255.0
+    if np.random.default_rng().uniform() > 0.5:
+        x = sk.exposure.equalize_adapthist(x)
+    if np.random.default_rng().uniform() > 0.5:
+        v_min, v_max = np.percentile(x,
+                                     (np.random.default_rng().uniform() * 5.0,
+                                      100.0 - np.random.default_rng().uniform() * 5.0))
         x = sk.exposure.rescale_intensity(x, in_range=(v_min, v_max))
-        x = 255.0 * sk.util.random_noise(x)
-        x = tf.convert_to_tensor(x)
-    else:
-        x
+    if np.random.default_rng().uniform() > 0.5:
+        x = sk.util.random_noise(x, var=0.01 * np.random.default_rng().uniform())
+    x = tf.convert_to_tensor(255.0 * x)
     return x
 
 
@@ -60,7 +62,7 @@ def random_augment(factor=0.5):
 strategy = tf.distribute.MirroredStrategy()
 print('Number of devices: {}'.format(strategy.num_replicas_in_sync))
 
-train_files = glob.glob(train_path + os.sep + "4.5" + os.sep + "*.png")
+train_files = glob.glob(train_path + os.sep + "*" + os.sep + "*.png")
 filtered_train_files = [r for r in train_files if
                         "20201127_FishDev_WT_28.5_1-C6" not in r and
                         "20201127_FishDev_WT_28.5_1-H11" not in r and
@@ -104,28 +106,25 @@ train_list_ds = tf.data.Dataset.list_files(filtered_train_files).shuffle(1000)
 
 print("Number of images in training dataset: ", train_list_ds.cardinality().numpy())
 
-train_images_ds = train_list_ds.map(parse_image).batch(batch_size)
+train_images_ds = train_list_ds.map(parse_image, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size)
 val_split = int(0.2 * len(train_images_ds))
-val_ds = train_images_ds.take(val_split).prefetch(buffer_size).cache()
-train_ds = train_images_ds.skip(val_split).prefetch(buffer_size).cache()
-train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
-val_ds = val_ds.prefetch(buffer_size=buffer_size).cache()
+val_ds = train_images_ds.take(val_split).prefetch(tf.data.AUTOTUNE).cache()
+train_ds = train_images_ds.skip(val_split).prefetch(tf.data.AUTOTUNE).cache()
+#train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
+#val_ds = val_ds.prefetch(buffer_size=buffer_size).cache()
 
 fill = 'reflect'
 inter = 'bilinear'
 
 model = keras.Sequential(
     [
-        # layers.RandomFlip(mode="horizontal_and_vertical"),
-        # layers.RandomTranslation(height_factor=0.0, width_factor=0.1, fill_mode=fill,
-        #                         interpolation=inter),
-        # layers.RandomRotation(factor=0.1, fill_mode=fill, interpolation=inter),
-        # layers.RandomZoom(height_factor=(-0.3, 0.0), fill_mode=fill, interpolation=inter),
-        # layers.RandomContrast(factor=0.85),
-        # layers.RandomBrightness(factor=(0.0, 0.3)),
+        layers.RandomFlip(mode="horizontal_and_vertical"),
+        layers.RandomTranslation(height_factor=0.0, width_factor=0.1, fill_mode=fill,
+                                 interpolation=inter),
+        layers.RandomZoom(height_factor=(-0.3, 0.0), fill_mode=fill, interpolation=inter),
+        layers.RandomBrightness(factor=(-0.1, 0.3)),
         random_augment(factor=0.5),
-        # layers.GaussianNoise(stddev=10.0),
-        # layers.Rescaling(1.0 / 255)
+        layers.Rescaling(1.0 / 255)
     ]
 )
 
