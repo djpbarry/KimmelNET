@@ -33,10 +33,10 @@ plt.legend(fontsize=8, markerscale=1.5)
 plt.show()
 
 wtData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                         '/20232103 ZF 15 mins 28.5 C_multi_gpu_added_augmentation_2023-05-12-10-47-53'
+                         '/20232103 ZF 15 mins 28.5 C_multi_gpu_added_augmentation_2023-05-20-18-23-29'
                          '/20232103 ZF 15 mins 28.5 C_multi_gpu_added_augmentation_predictions.csv')
 mutData = pandas.read_csv('Z:/working/barryd/hpc/python/zf_reg/outputs'
-                          '/20232803 ZF 15 mins 25_multi_gpu_added_augmentation_2023-05-12-10-44-57'
+                          '/20232803 ZF 15 mins 25_multi_gpu_added_augmentation_2023-05-20-18-20-21'
                           '/20232803 ZF 15 mins 25_multi_gpu_added_augmentation_predictions.csv')
 
 wtData = wtData[wtData['Label'] >= 4.5]

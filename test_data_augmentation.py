@@ -2,6 +2,7 @@ import glob
 import os
 from datetime import datetime
 
+import numpy as np
 import skimage as sk
 import tensorflow as tf
 from keras import layers
@@ -18,7 +19,7 @@ name = "simple_regression_" + definitions.name
 # train_path = "Zebrafish_Train_Regression"
 # train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression/"
-#train_path = "C:/Users/davej/Dropbox (The Francis Crick)/ZF_Test"
+# train_path = "C:/Users/davej/Dropbox (The Francis Crick)/ZF_Test"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -36,6 +37,24 @@ def parse_image(filename):
     # image = tf.image.convert_image_dtype(image, tf.float32)
     image = tf.image.resize(image, image_size)
     return image, label
+
+
+def random_augment_img(x, p=0.25):
+    if tf.random.uniform([]) < p:
+        # v_min, v_max = np.percentile(x.numpy(), (0.5, 99.5))
+        # x = sk.exposure.rescale_intensity(x.numpy(), in_range=(v_min, v_max))
+        x = sk.exposure.equalize_adapthist(x.numpy() / 255.0)
+        v_min, v_max = np.percentile(x, (1.0, 99.0))
+        x = sk.exposure.rescale_intensity(x, in_range=(v_min, v_max))
+        x = 255.0 * sk.util.random_noise(x)
+        x = tf.convert_to_tensor(x)
+    else:
+        x
+    return x
+
+
+def random_augment(factor=0.5):
+    return layers.Lambda(lambda x: random_augment_img(x, factor))
 
 
 strategy = tf.distribute.MirroredStrategy()
@@ -97,15 +116,16 @@ inter = 'bilinear'
 
 model = keras.Sequential(
     [
-        layers.RandomFlip(mode="horizontal_and_vertical"),
-        layers.RandomTranslation(height_factor=0.0, width_factor=0.1, fill_mode=fill,
-                                 interpolation=inter),
-        #layers.RandomRotation(factor=0.1, fill_mode=fill, interpolation=inter),
-        layers.RandomZoom(height_factor=(-0.3, 0.1), fill_mode=fill, interpolation=inter),
-        layers.GaussianNoise(stddev=10.0),
-        layers.RandomContrast(factor=0.75),
-        layers.RandomBrightness(factor=0.5),
-        layers.Rescaling(1.0 / 255)
+        # layers.RandomFlip(mode="horizontal_and_vertical"),
+        # layers.RandomTranslation(height_factor=0.0, width_factor=0.1, fill_mode=fill,
+        #                         interpolation=inter),
+        # layers.RandomRotation(factor=0.1, fill_mode=fill, interpolation=inter),
+        # layers.RandomZoom(height_factor=(-0.3, 0.0), fill_mode=fill, interpolation=inter),
+        # layers.RandomContrast(factor=0.85),
+        # layers.RandomBrightness(factor=(0.0, 0.3)),
+        random_augment(factor=0.5),
+        # layers.GaussianNoise(stddev=10.0),
+        # layers.Rescaling(1.0 / 255)
     ]
 )
 
