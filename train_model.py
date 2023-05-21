@@ -1,13 +1,14 @@
 import glob
 import os
+import random
 from datetime import datetime
 
 import matplotlib.pyplot as plt
+import numpy as np
+import skimage as sk
 import tensorflow as tf
 from keras import layers
 from tensorflow import keras
-import numpy as np
-import skimage as sk
 
 import definitions
 
@@ -19,7 +20,8 @@ buffer_size = 4
 name = "simple_regression_" + definitions.name
 
 # train_path = "Zebrafish_Train_Regression"
-train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
+# train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
+train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
@@ -37,26 +39,6 @@ def parse_image(filename):
     # image = tf.image.convert_image_dtype(image, tf.float32)
     image = tf.image.resize(image, image_size)
     return image, label
-
-
-def random_augment_img(x, p=0.25):
-    x = x.numpy() / 255.0
-    if np.random.default_rng().uniform() > 0.5:
-        x = sk.exposure.equalize_adapthist(x)
-    if np.random.default_rng().uniform() > 0.5:
-        v_min, v_max = np.percentile(x,
-                                     (np.random.default_rng().uniform() * 5.0,
-                                      100.0 - np.random.default_rng().uniform() * 5.0))
-        x = sk.exposure.rescale_intensity(x, in_range=(v_min, v_max))
-    if np.random.default_rng().uniform() > 0.5:
-        x = sk.util.random_noise(x, var=0.01 * np.random.default_rng().uniform())
-    x = tf.convert_to_tensor(255.0 * x)
-    return x
-
-
-def random_augment(factor=0.5):
-    return layers.Lambda(lambda x: random_augment_img(x, factor))
-
 
 strategy = tf.distribute.MirroredStrategy()
 print('Number of devices: {}'.format(strategy.num_replicas_in_sync))
@@ -134,8 +116,6 @@ with strategy.scope():
             layers.RandomTranslation(height_factor=0.0, width_factor=0.1, fill_mode=fill,
                                      interpolation=inter),
             layers.RandomZoom(height_factor=(-0.3, 0.0), fill_mode=fill, interpolation=inter),
-            layers.RandomBrightness(factor=(-0.1, 0.3)),
-            random_augment(factor=0.5),
             layers.Rescaling(1.0 / 255),
             layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
             layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),

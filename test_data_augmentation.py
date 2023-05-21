@@ -18,13 +18,18 @@ buffer_size = 1
 name = "simple_regression_" + definitions.name
 
 # train_path = "Zebrafish_Train_Regression"
-# train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
-train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression/"
+train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
+aug_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
+#train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression/"
 # train_path = "C:/Users/davej/Dropbox (The Francis Crick)/ZF_Test"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-output_path = "outputs" + os.sep + name + "_" + date_time
+output_path = aug_path
 
-os.makedirs(output_path)
+#os.makedirs(output_path)
+
+for i in range(190):
+    if not os.path.exists(output_path + os.sep + str(4.5 + i * 0.25)):
+        os.makedirs(output_path + os.sep + str(4.5 + i * 0.25))
 
 with open(output_path + os.sep + name + '_source.py', 'w') as f:
     f.write(open(__file__).read())
@@ -107,38 +112,38 @@ train_list_ds = tf.data.Dataset.list_files(filtered_train_files).shuffle(1000)
 print("Number of images in training dataset: ", train_list_ds.cardinality().numpy())
 
 train_images_ds = train_list_ds.map(parse_image, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size)
-val_split = int(0.2 * len(train_images_ds))
-val_ds = train_images_ds.take(val_split).prefetch(tf.data.AUTOTUNE).cache()
-train_ds = train_images_ds.skip(val_split).prefetch(tf.data.AUTOTUNE).cache()
-#train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
-#val_ds = val_ds.prefetch(buffer_size=buffer_size).cache()
+train_ds = train_images_ds.prefetch(tf.data.AUTOTUNE).cache()
+# train_ds = train_ds.prefetch(buffer_size=buffer_size).cache()
+# val_ds = val_ds.prefetch(buffer_size=buffer_size).cache()
 
 fill = 'reflect'
 inter = 'bilinear'
 
-model = keras.Sequential(
-    [
-        layers.RandomFlip(mode="horizontal_and_vertical"),
-        layers.RandomTranslation(height_factor=0.0, width_factor=0.1, fill_mode=fill,
-                                 interpolation=inter),
-        layers.RandomZoom(height_factor=(-0.3, 0.0), fill_mode=fill, interpolation=inter),
-        layers.RandomBrightness(factor=(-0.1, 0.3)),
-        random_augment(factor=0.5),
-        layers.Rescaling(1.0 / 255)
-    ]
-)
+with strategy.scope():
+    model = keras.Sequential(
+        [
+            #            layers.RandomFlip(mode="horizontal_and_vertical"),
+            #           layers.RandomTranslation(height_factor=0.0, width_factor=0.1, fill_mode=fill,
+            #                                    interpolation=inter),
+            #           layers.RandomZoom(height_factor=(-0.3, 0.0), fill_mode=fill, interpolation=inter),
+            layers.RandomBrightness(factor=(-0.1, 0.3)),
+            random_augment(factor=0.5),
+            #           layers.Rescaling(1.0 / 255)
+        ]
+    )
 
 # plt.figure(figsize=(20, 17))
 
 # result = model(train_ds.take(1))
 
-for images, labels in train_ds.take(1):
-    for i in range(25):
+count = 0
+
+for images, labels in train_ds:
+    for i in range(len(images)):
         augImage = model(images[i], training=True).numpy()
-        sk.io.imsave(output_path + os.sep + str(labels[i].numpy()) + '_' + str(i) + '_augmented.tiff',
-                     augImage[:, :, 0])
-        sk.io.imsave(output_path + os.sep + str(labels[i].numpy()) + '_' + str(i) + '_original.tiff',
-                     images[i].numpy())
+        sk.io.imsave(output_path + os.sep + str(labels[i].numpy()) + os.sep + str(count) + '_augmented.png',
+                     augImage[:, :, 0].astype('ubyte'))
+        count = count + 1
 
 model.summary()
 
