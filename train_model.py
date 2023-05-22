@@ -113,9 +113,9 @@ with strategy.scope():
         [
             keras.Input(shape=image_size + (1,)),
             layers.RandomFlip(mode="horizontal_and_vertical"),
-            layers.RandomTranslation(height_factor=0.0, width_factor=0.1, fill_mode=fill,
+            layers.RandomTranslation(height_factor=0.2, width_factor=0.2, fill_mode=fill,
                                      interpolation=inter),
-            layers.RandomZoom(height_factor=(-0.3, 0.0), fill_mode=fill, interpolation=inter),
+            layers.RandomZoom(height_factor=(-0.75, 0.0), fill_mode=fill, interpolation=inter),
             layers.Rescaling(1.0 / 255),
             layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
             layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),

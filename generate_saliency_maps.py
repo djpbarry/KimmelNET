@@ -1,8 +1,10 @@
-import os
 import glob
+import os
+import random
 from datetime import datetime
 
 import matplotlib.pyplot as plt
+import skimage as sk
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
@@ -25,6 +27,7 @@ def prep_input(path):
     image = tf.expand_dims(image, axis=0)
     image = tf.image.resize(image, image_size)
     return image
+
 
 def parse_image(filename):
     parts = tf.strings.split(filename, os.sep)
@@ -64,9 +67,9 @@ def guidedRelu(x):
     return tf.nn.relu(x), grad
 
 
-model = keras.models.load_model('/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs'
-                                '/simple_regression_multi_gpu_added_augmentation_2022-07-04-13-07-05'
-                                '/simple_regression_multi_gpu_added_augmentation_trained_model')
+model = keras.models.load_model('z:/working/barryd/hpc/python/zf_reg/outputs'
+                                '/simple_regression_multi_gpu_custom_augmentation_2023-05-21-22-09-29/'
+                                'simple_regression_multi_gpu_custom_augmentation_trained_model')
 
 layer_dict = [layer for layer in model.layers[1:] if hasattr(layer, 'activation')]
 for layer in layer_dict:
@@ -78,7 +81,7 @@ for layer in layer_dict:
 
 model.summary()
 
-test_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/" + definitions.test_source_folder
+test_path = "z:/working/barryd/hpc/python/keras_image_class/" + definitions.test_source_folder
 
 test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
 
@@ -128,15 +131,14 @@ filtered_test_files = [r for r in test_files if
                        "FishDev_WT_02_3-H6" not in r and
                        "FishDev_WT_02_3-H7" not in r]
 
-test_list_ds = tf.data.Dataset.list_files(filtered_test_files).shuffle(1000)
+test_list_ds = tf.data.Dataset.list_files(random.sample(filtered_test_files, 100)).shuffle(1000)
 
 print("Number of images in training dataset: ", test_list_ds.cardinality().numpy())
 
 test_ds = test_list_ds.map(parse_image).batch(batch_size)
 test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
 
-
-#input_img = prep_input('Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression/45'
+# input_img = prep_input('Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Test_Regression/45'
 #                       '/20201127_FishDev_WT_28.5_1-C10-163.png')
 
 for x, y, z in test_ds:
@@ -146,12 +148,15 @@ for x, y, z in test_ds:
     grads = tape.gradient(result, x)
     filenames = [f.decode() for f in z.numpy()]
     for g in range(len(grads)):
-        np.savetxt(output_path + os.sep + os.path.split(filenames[g])[1] + '_saliency_map.txt', grads[g, :, :, 0])
+        #np.savetxt(output_path + os.sep + os.path.split(filenames[g])[1] + '_saliency_map.txt', grads[g, :, :, 0])
+        sk.io.imsave(output_path + os.sep + os.path.split(filenames[g])[1] + '_saliency_map.tiff',
+                     grads[g, :, :, 0].numpy())
+        sk.io.imsave(output_path + os.sep + os.path.split(filenames[g])[1] + '_orig.tiff',
+                     x[g].numpy())
 
-#plot_maps(norm_flat_image(grads[0]), norm_flat_image(input_img[0]))
+# plot_maps(norm_flat_image(grads[0]), norm_flat_image(input_img[0]))
 
-#plt.imshow(norm_flat_image(grads[0]))
-#plt.savefig(output_path + os.sep + name + '_saliency_map.png', cmap="gray")
+# plt.imshow(norm_flat_image(grads[0]))
+# plt.savefig(output_path + os.sep + name + '_saliency_map.png', cmap="gray")
 
-#tf.keras.utils.save_img(output_path + os.sep + name + '_saliency_map.tif', grads[0])
-
+# tf.keras.utils.save_img(output_path + os.sep + name + '_saliency_map.tif', grads[0])
