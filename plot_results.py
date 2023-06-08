@@ -23,8 +23,8 @@ dblue = (0.0, 0.0, 0.5)
 model_path = '/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/'
 models = glob.glob(model_path + os.sep + "simple_regression*")
 
-datasets = ({'Zebrafish_Test_Regression', 'Zebrafish_25C', 'Crick'},
-            {'20232103 ZF 15 mins 28.5 C', '20232803 ZF 15 mins 25', 'Princeton'})
+datasets = (('Zebrafish_Test_Regression', 'Zebrafish_25C', 'Crick'),
+            ('20232103 ZF 15 mins 28.5 C', '20232803 ZF 15 mins 25', 'Princeton'))
 
 for m in models:
     model_name = os.path.basename(m)
@@ -44,7 +44,8 @@ for m in models:
     # plt.xlim(left=0, right=55)
     # plt.ylim(top=60, bottom=0)
     plt.legend(fontsize=8, markerscale=1.5)
-    plt.savefig(plot_path + os.sep + 'Training_Progress.pdf')
+    plt.savefig(plot_path + os.sep + 'Training_Progress.png')
+    plt.close()
 
     for wt_folder, mut_folder, data_label in datasets:
         print('Producing plots for ' + wt_folder + ' and ' + mut_folder)
@@ -92,7 +93,8 @@ for m in models:
         plt.xlim(left=0, right=55)
         plt.ylim(top=60, bottom=0)
         plt.legend(fontsize=8, markerscale=1.5)
-        plt.savefig(plot_path + os.sep + data_label + '_Prediction_Accuracy.pdf')
+        plt.savefig(plot_path + os.sep + data_label + '_Prediction_Accuracy.png')
+        plt.close()
 
         wterrs = wtData['Prediction'] - wtData['Label'] * wtpopt1
         print(np.mean(wterrs))
@@ -114,7 +116,8 @@ for m in models:
         plt.xlim(left=-40, right=40)
         plt.ylim(bottom=0, top=0.1)
         plt.legend(fontsize=8, markerscale=1.5)
-        plt.savefig(plot_path + os.sep + data_label + '_WT_Prediction_Errors.pdf')
+        plt.savefig(plot_path + os.sep + data_label + '_WT_Prediction_Errors.png')
+        plt.close()
 
         errs = [muterrs, mut_kim_errs]
 
@@ -125,7 +128,8 @@ for m in models:
         plt.xlim(left=-40, right=40)
         plt.ylim(bottom=0, top=0.1)
         plt.legend(fontsize=8, markerscale=1.5)
-        plt.savefig(plot_path + os.sep + data_label + '_MUT_Prediction_Errors.pdf')
+        plt.savefig(plot_path + os.sep + data_label + '_MUT_Prediction_Errors.png')
+        plt.close()
 
         mMin = 1
         mMax = -1
@@ -194,4 +198,5 @@ for m in models:
         plt.xlim(left=0, right=55)
         plt.ylim(top=60, bottom=0)
         plt.legend(fontsize=8, markerscale=1.5, loc='upper left')
-        plt.savefig(plot_path + os.sep + data_label + '_Confidence_Intervals.pdf')
+        plt.savefig(plot_path + os.sep + data_label + '_Confidence_Intervals.png')
+        plt.close()
