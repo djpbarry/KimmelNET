@@ -1,6 +1,5 @@
 import glob
 import os
-import random
 from datetime import datetime
 
 import numpy as np
@@ -11,6 +10,13 @@ from tensorflow import keras
 
 import definitions
 
+hist_eq_thresh = np.random.default_rng().choice(np.array(range(1, 10)) / 10.0)
+sat_thresh = np.random.default_rng().choice(np.array(range(1, 10)) / 10.0)
+noise_thresh = np.random.default_rng().choice(np.array(range(1, 10)) / 10.0)
+noise_sd = np.random.default_rng().choice(np.array(range(1, 11)) / 500.0)
+percent_1 = np.random.default_rng().choice(np.array(range(1, 11)))
+percent_2 = np.random.default_rng().choice(np.array(range(1, 11)))
+
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 32
@@ -20,12 +26,12 @@ name = "simple_regression_" + definitions.name
 # train_path = "Zebrafish_Train_Regression"
 train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 aug_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
-#train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression/"
+# train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression/"
 # train_path = "C:/Users/davej/Dropbox (The Francis Crick)/ZF_Test"
-date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-output_path = aug_path
+date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
+output_path = aug_path + '_' + date_time
 
-#os.makedirs(output_path)
+os.makedirs(output_path)
 
 for i in range(190):
     if not os.path.exists(output_path + os.sep + str(4.5 + i * 0.25)):
@@ -47,15 +53,15 @@ def parse_image(filename):
 
 def random_augment_img(x, p=0.25):
     x = x.numpy() / 255.0
-    if np.random.default_rng().uniform() > 0.5:
+    if np.random.default_rng().uniform() > hist_eq_thresh:
         x = sk.exposure.equalize_adapthist(x)
-    if np.random.default_rng().uniform() > 0.5:
+    if np.random.default_rng().uniform() > sat_thresh:
         v_min, v_max = np.percentile(x,
-                                     (np.random.default_rng().uniform() * 5.0,
-                                      100.0 - np.random.default_rng().uniform() * 5.0))
+                                     (np.random.default_rng().uniform() * percent_1,
+                                      100.0 - np.random.default_rng().uniform() * percent_2))
         x = sk.exposure.rescale_intensity(x, in_range=(v_min, v_max))
-    if np.random.default_rng().uniform() > 0.5:
-        x = sk.util.random_noise(x, var=0.01 * np.random.default_rng().uniform())
+    if np.random.default_rng().uniform() > noise_thresh:
+        x = sk.util.random_noise(x, var=noise_sd * np.random.default_rng().uniform())
     x = tf.convert_to_tensor(255.0 * x)
     return x
 
@@ -149,5 +155,11 @@ model.summary()
 
 with open(output_path + os.sep + name + '_model_summary.txt', 'w') as fh:
     model.summary(print_fn=lambda x: fh.write(x + '\n'))
+    fh.write('hist_eq_thresh: ' + str(hist_eq_thresh))
+    fh.write('sat_thresh: ' + str(sat_thresh))
+    fh.write('noise_thresh: ' + str(noise_thresh))
+    fh.write('noise_sd: ' + str(noise_sd))
+    fh.write('percent_1: ' + str(percent_1))
+    fh.write('percent_2: ' + str(percent_2))
 
 print("Done.")

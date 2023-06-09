@@ -1,16 +1,18 @@
 import glob
 import os
-import random
+import sys
 from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
-import skimage as sk
 import tensorflow as tf
 from keras import layers
 from tensorflow import keras
 
 import definitions
+
+trans_factor = np.random.default_rng().choice(np.array(range(1, 16)) / 50.0)
+zoom_factor = np.random.default_rng().choice(np.array(range(1, 17)) / 40.0)
 
 image_size = (224, 268)
 cropped_image_size = (224, 224)
@@ -20,9 +22,11 @@ buffer_size = 4
 name = "simple_regression_" + definitions.name
 
 # train_path = "Zebrafish_Train_Regression"
-# train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
-train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
-date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+train_parent = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/"
+#train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
+data_paths = glob.glob(train_parent + os.sep + "Zebrafish_Train_Regression_Augmented*")
+train_path = data_paths[int(sys.argv[1])]
+date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
 output_path = "outputs" + os.sep + name + "_" + date_time
 
 os.makedirs(output_path)
@@ -39,6 +43,7 @@ def parse_image(filename):
     # image = tf.image.convert_image_dtype(image, tf.float32)
     image = tf.image.resize(image, image_size)
     return image, label
+
 
 strategy = tf.distribute.MirroredStrategy()
 print('Number of devices: {}'.format(strategy.num_replicas_in_sync))
@@ -103,8 +108,8 @@ plt.savefig(output_path + os.sep + name + '_sample_images.png')
 plt.close(3)
 
 csv_logger = keras.callbacks.CSVLogger(output_path + os.sep + name + '_training.log')
-checkpointer = keras.callbacks.ModelCheckpoint(filepath=output_path + os.sep + name + '{epoch}', save_best_only=False,
-                                               save_weights_only=True, save_freq=10 * batch_size)
+#checkpointer = keras.callbacks.ModelCheckpoint(filepath=output_path + os.sep + name + '{epoch}', save_best_only=False,
+#                                               save_weights_only=True, save_freq=10 * batch_size)
 fill = 'reflect'
 inter = 'bilinear'
 
@@ -113,9 +118,9 @@ with strategy.scope():
         [
             keras.Input(shape=image_size + (1,)),
             layers.RandomFlip(mode="horizontal_and_vertical"),
-            layers.RandomTranslation(height_factor=0.2, width_factor=0.2, fill_mode=fill,
+            layers.RandomTranslation(height_factor=0.0, width_factor=0.2, fill_mode=fill,
                                      interpolation=inter),
-            layers.RandomZoom(height_factor=(-0.75, 0.0), fill_mode=fill, interpolation=inter),
+            layers.RandomZoom(height_factor=(-0.3, 0.0), fill_mode=fill, interpolation=inter),
             layers.Rescaling(1.0 / 255),
             layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]),
             layers.Conv2D(128, kernel_size=(3, 3), activation="relu"),
@@ -138,11 +143,14 @@ with strategy.scope():
 
     with open(output_path + os.sep + name + '_model_summary.txt', 'w') as fh:
         model.summary(print_fn=lambda x: fh.write(x + '\n'))
+        fh.write('\n\nTraining Data: ' + train_path)
+        fh.write('\ntrans_factor: ' + str(trans_factor))
+        fh.write('\nzoom_factor: ' + str(zoom_factor))
 
     model.compile(loss="mean_squared_error", optimizer=keras.optimizers.Adam())
 
 history = model.fit(train_ds, epochs=epochs, validation_data=val_ds, validation_freq=1,
-                    callbacks=[csv_logger, checkpointer])
+                    callbacks=[csv_logger])
 
 plt.figure(num=1, figsize=(10, 10))
 plt.title('Optimizer : Adam', fontsize=10)
