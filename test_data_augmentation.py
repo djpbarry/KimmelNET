@@ -10,12 +10,12 @@ from tensorflow import keras
 
 import definitions
 
-hist_eq_thresh = np.random.default_rng().choice(np.array(range(1, 10)) / 10.0)
-sat_thresh = np.random.default_rng().choice(np.array(range(1, 10)) / 10.0)
-noise_thresh = np.random.default_rng().choice(np.array(range(1, 10)) / 10.0)
-noise_sd = np.random.default_rng().choice(np.array(range(1, 11)) / 500.0)
-percent_1 = np.random.default_rng().choice(np.array(range(1, 11)))
-percent_2 = np.random.default_rng().choice(np.array(range(1, 11)))
+hist_eq_thresh = np.random.default_rng().choice(np.array(range(0, 3)) / 10.0)
+sat_thresh = np.random.default_rng().choice(np.array(range(0, 7)) / 10.0)
+noise_thresh = np.random.default_rng().choice(np.array(range(0, 9)) / 10.0)
+noise_sd = np.random.default_rng().choice(np.array(range(5, 11)) / 500.0)
+percent_1 = np.random.default_rng().choice(np.array(range(6, 16)))
+percent_2 = np.random.default_rng().choice(np.array(range(3, 7)))
 
 image_size = (224, 268)
 cropped_image_size = (224, 224)
