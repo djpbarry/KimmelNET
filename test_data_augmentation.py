@@ -1,6 +1,7 @@
 import glob
 import os
 from datetime import datetime
+import sys
 
 import numpy as np
 import skimage as sk
@@ -28,8 +29,8 @@ train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish
 aug_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
 # train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression/"
 # train_path = "C:/Users/davej/Dropbox (The Francis Crick)/ZF_Test"
-date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
-output_path = aug_path + '_' + date_time
+date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+output_path = aug_path + '_' + date_time + '_' + sys.argv[1]
 
 os.makedirs(output_path)
 
