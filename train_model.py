@@ -24,10 +24,10 @@ name = "simple_regression_" + definitions.name
 # train_path = "Zebrafish_Train_Regression"
 train_parent = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/"
 #train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
-data_paths = glob.glob(train_parent + os.sep + "Zebrafish_Train_Regression_Augmented_2023-06-12*")
+data_paths = glob.glob(train_parent + os.sep + "Zebrafish_Train_Regression_Augmented_2023-06-13*")
 train_path = data_paths[int(sys.argv[1])]
-date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
-output_path = "outputs" + os.sep + name + "_" + date_time
+date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+output_path = "outputs" + os.sep + name + "_" + date_time + '_' + sys.argv[1]
 
 os.makedirs(output_path)
 
