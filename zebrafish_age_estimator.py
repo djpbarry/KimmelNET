@@ -20,7 +20,7 @@ date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 # output_path = "outputs" + os.sep + name + "_" + date_time
 parent_model_path = '/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/'
 data_path = '/nemo/stp/lm/working/barryd/hpc/python//keras_image_class/'
-model_list = glob.glob(parent_model_path + os.sep + "simple_regression_multi_gpu_custom_augmentation_2023-06*")
+model_list = glob.glob(parent_model_path + os.sep + "simple_regression_multi_gpu_custom_augmentation_2023-06-1[4-7]*")
 model_path = model_list[int(sys.argv[1])]
 datasets = ('Zebrafish_Test_Regression', 'Zebrafish_25C', '20232103 ZF 15 mins 28.5 C', '20232803 ZF 15 mins 25')
 
