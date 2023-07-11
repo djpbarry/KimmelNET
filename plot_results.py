@@ -22,7 +22,7 @@ dred = (0.65, 0.3, 0.0)
 dblue = (0.0, 0.0, 0.5)
 
 parent_model_path = '/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/'
-model_list = glob.glob(parent_model_path + os.sep + "simple_regression_multi_gpu_custom_augmentation_2023-06*")
+model_list = glob.glob(parent_model_path + os.sep + "simple_regression_multi_gpu_custom_augmentation_2023-06-1[4-7]*")
 model_path = model_list[int(sys.argv[1])]
 
 datasets = (('Zebrafish_Test_Regression', 'Zebrafish_25C', 'Crick'),
