@@ -10,7 +10,6 @@ image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
 epochs = 100
-buffer_size = 4
 name = 'transfer_learning'
 
 model_dir = "/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/published_model_v1.1/simple_regression_multi_gpu_custom_augmentation_trained_model/"
@@ -45,7 +44,8 @@ train_files = glob.glob(train_path + os.sep + "*" + os.sep + "*.png")
 
 # train_list_ds = tf.data.Dataset.from_tensor_slices(filtered_train_files).shuffle(1000)
 # train_list_ds = tf.data.Dataset.from_tensor_slices(train_files).shuffle(1000)
-train_list_ds = tf.data.Dataset.list_files(train_files).shuffle(1000)
+dataset = tf.data.Dataset.list_files(train_files)
+train_list_ds = dataset.shuffle(dataset.cardinality(), reshuffle_each_iteration=True)
 
 print("Number of images in training dataset: ", train_list_ds.cardinality().numpy())
 
@@ -72,7 +72,9 @@ with strategy.scope():
     model = keras.models.load_model(model_dir)
     model.trainable = True
 
-    for layer in model.layers[0:-1]:
+    print('Model has ' + str(len(model.layers)) + ' layers')
+
+    for layer in model.layers[5:-1]:
         layer.trainable = False
 
     model.summary()
