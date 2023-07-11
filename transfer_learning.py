@@ -81,7 +81,7 @@ with strategy.scope():
         model.summary(print_fn=lambda x: fh.write(x + '\n'))
         fh.write('\n\nTraining Data: ' + train_path)
 
-    model.compile(loss="mean_squared_error", optimizer=keras.optimizers.Adam(), learning_rate=0.0001)
+    model.compile(loss="mean_squared_error", optimizer=keras.optimizers.Adam(learning_rate=0.0001))
 
 history = model.fit(train_ds, epochs=epochs, validation_data=val_ds, validation_freq=1,
                     callbacks=[csv_logger])
