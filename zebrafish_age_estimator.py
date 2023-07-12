@@ -14,15 +14,14 @@ import definitions
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
-buffer_size = 4
 name = definitions.test_source_folder + "_" + definitions.name
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 # output_path = "outputs" + os.sep + name + "_" + date_time
 parent_model_path = '/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/'
 data_path = '/nemo/stp/lm/working/barryd/hpc/python//keras_image_class/'
-model_list = glob.glob(parent_model_path + os.sep + "simple_regression_multi_gpu_custom_augmentation_2023-06-1[4-7]*")
+model_list = glob.glob(parent_model_path + os.sep + "transfer_learning_2023-07-12-13*")
 model_path = model_list[int(sys.argv[1])]
-datasets = ('Zebrafish_Test_Regression', 'Zebrafish_25C', '20232103 ZF 15 mins 28.5 C', '20232803 ZF 15 mins 25')
+datasets = ('Zebrafish_Test_Regression', 'Zebrafish_25C', 'Zebrafish_Test_Princeton_Regression', '20232803 ZF 15 mins 25')
 
 
 def parse_image(filename):
@@ -100,7 +99,7 @@ for data in datasets:
     print("Number of images in test dataset: ", test_list_ds.cardinality().numpy())
 
     test_ds = test_list_ds.map(parse_image).batch(batch_size)
-    test_ds = test_ds.cache().prefetch(buffer_size=buffer_size)
+    test_ds = test_ds.prefetch(tf.data.AUTOTUNE).cache()
 
     model_dir = glob.glob(parent_model_path + os.sep + model_name + os.sep + '*model')
 

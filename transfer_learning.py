@@ -9,7 +9,7 @@ from tensorflow import keras
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 256
-epochs = 100
+epochs = 10000
 name = 'transfer_learning'
 
 model_dir = "/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/published_model_v1.1/simple_regression_multi_gpu_custom_augmentation_trained_model/"
@@ -74,7 +74,7 @@ with strategy.scope():
 
     print('Model has ' + str(len(model.layers)) + ' layers')
 
-    for layer in model.layers[5:-1]:
+    for layer in model.layers[5:-5]:
         layer.trainable = False
 
     model.summary()
