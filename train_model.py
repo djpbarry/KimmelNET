@@ -11,20 +11,21 @@ from tensorflow import keras
 
 import definitions
 
-trans_factor = np.random.default_rng().choice(np.array(range(1, 16)) / 50.0)
-zoom_factor = np.random.default_rng().choice(np.array(range(1, 17)) / 40.0)
+# trans_factor = np.random.default_rng().choice(np.array(range(1, 16)) / 50.0)
+# zoom_factor = np.random.default_rng().choice(np.array(range(1, 17)) / 40.0)
+trans_factor = 0.08
+zoom_factor = 0.1
 
 image_size = (224, 268)
 cropped_image_size = (224, 224)
-batch_size = 256
-epochs = 2000
-buffer_size = 4
-name = "simple_regression_" + definitions.name
+batch_size = 64
+epochs = 500
+name = "published_model_" + definitions.name
 
 # train_path = "Zebrafish_Train_Regression"
 train_parent = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/"
 #train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
-data_paths = glob.glob(train_parent + os.sep + "Zebrafish_Train_Regression_Augmented_2023-06-13*")
+data_paths = glob.glob(train_parent + os.sep + "Zebrafish_Train_Regression_Augmented_2023-06-09-17-12-46-932556")
 train_path = data_paths[int(sys.argv[1])]
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time + '_' + sys.argv[1]
@@ -88,7 +89,8 @@ filtered_train_files = [r for r in train_files if
 
 # train_list_ds = tf.data.Dataset.from_tensor_slices(filtered_train_files).shuffle(1000)
 # train_list_ds = tf.data.Dataset.from_tensor_slices(train_files).shuffle(1000)
-train_list_ds = tf.data.Dataset.list_files(filtered_train_files).shuffle(1000)
+dataset = tf.data.Dataset.list_files(filtered_train_files)
+train_list_ds = dataset.shuffle(dataset.cardinality(), reshuffle_each_iteration=True)
 
 print("Number of images in training dataset: ", train_list_ds.cardinality().numpy())
 
@@ -147,7 +149,7 @@ with strategy.scope():
         fh.write('\ntrans_factor: ' + str(trans_factor))
         fh.write('\nzoom_factor: ' + str(zoom_factor))
 
-    model.compile(loss="mean_squared_error", optimizer=keras.optimizers.Adam())
+    model.compile(loss="mean_squared_error", optimizer=keras.optimizers.Adam(learning_rate=0.0005))
 
 history = model.fit(train_ds, epochs=epochs, validation_data=val_ds, validation_freq=1,
                     callbacks=[csv_logger])

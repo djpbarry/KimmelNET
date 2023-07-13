@@ -8,11 +8,11 @@ from tensorflow import keras
 
 image_size = (224, 268)
 cropped_image_size = (224, 224)
-batch_size = 256
-epochs = 10000
+batch_size = 64
+epochs = 500
 name = 'transfer_learning'
 
-model_dir = "/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/published_model_v1.1/simple_regression_multi_gpu_custom_augmentation_trained_model/"
+model_dir = "/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/published_model_multi_gpu_custom_augmentation_2023-07-13-12-33-27_0/published_model_multi_gpu_custom_augmentation_trained_model/"
 # train_path = "Zebrafish_Train_Regression"
 train_parent = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/"
 # train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
