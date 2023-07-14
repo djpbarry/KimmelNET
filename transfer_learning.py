@@ -9,7 +9,7 @@ from tensorflow import keras
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 64
-epochs = 500
+epochs = 2000
 name = 'transfer_learning'
 
 model_dir = "/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/published_model_multi_gpu_custom_augmentation_2023-07-13-12-33-27_0/published_model_multi_gpu_custom_augmentation_trained_model/"
@@ -49,7 +49,9 @@ train_list_ds = dataset.shuffle(dataset.cardinality(), reshuffle_each_iteration=
 
 print("Number of images in training dataset: ", train_list_ds.cardinality().numpy())
 
-train_images_ds = train_list_ds.map(parse_image, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size)
+train_images_ds = train_list_ds.take(500).map(parse_image, num_parallel_calls=tf.data.AUTOTUNE)
+train_images_ds = train_images_ds.shuffle(train_images_ds.cardinality(), reshuffle_each_iteration=True).batch(
+    batch_size)
 val_split = int(0.2 * len(train_images_ds))
 val_ds = train_images_ds.take(val_split).prefetch(tf.data.AUTOTUNE).cache()
 train_ds = train_images_ds.skip(val_split).prefetch(tf.data.AUTOTUNE).cache()
