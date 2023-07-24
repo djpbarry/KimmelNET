@@ -22,7 +22,7 @@ dred = (0.65, 0.3, 0.0)
 dblue = (0.0, 0.0, 0.5)
 
 parent_model_path = '/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/'
-model_list = glob.glob(parent_model_path + os.sep + "transfer_learning_2023-07-13-15-36-13_*")
+model_list = glob.glob(parent_model_path + os.sep + "transfer_learning_2023-07-13-16-07-54_*")
 model_path = model_list[int(sys.argv[1])]
 
 datasets = (('Zebrafish_Test_Regression', 'Zebrafish_25C', 'Crick'),

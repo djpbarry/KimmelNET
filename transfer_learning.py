@@ -9,10 +9,10 @@ from tensorflow import keras
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 64
-epochs = 2000
+epochs = 5000
 name = 'transfer_learning'
 
-model_dir = "/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/published_model_multi_gpu_custom_augmentation_2023-07-13-12-33-27_0/published_model_multi_gpu_custom_augmentation_trained_model/"
+model_dir = "/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/published_model_v1.2/published_model_multi_gpu_custom_augmentation_trained_model/"
 # train_path = "Zebrafish_Train_Regression"
 train_parent = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/"
 # train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
@@ -76,8 +76,8 @@ with strategy.scope():
 
     print('Model has ' + str(len(model.layers)) + ' layers')
 
-    for layer in model.layers[5:-5]:
-        layer.trainable = False
+    # for layer in model.layers[5:-5]:
+    #   layer.trainable = False
 
     model.summary()
 
