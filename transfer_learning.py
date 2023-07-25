@@ -1,5 +1,6 @@
 import glob
 import os
+import sys
 from datetime import datetime
 
 import matplotlib.pyplot as plt
@@ -9,10 +10,12 @@ from tensorflow import keras
 image_size = (224, 268)
 cropped_image_size = (224, 224)
 batch_size = 64
-epochs = 5000
+epochs = int(sys.argv[2])
+layers_to_train = int(sys.argv[3])
 name = 'transfer_learning'
 
-model_dir = "/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/published_model_v1.2/published_model_multi_gpu_custom_augmentation_trained_model/"
+# model_dir = "/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/published_model_v1.2/published_model_multi_gpu_custom_augmentation_trained_model/"
+model_dir = sys.argv[1]
 # train_path = "Zebrafish_Train_Regression"
 train_parent = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/"
 # train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
@@ -49,7 +52,7 @@ train_list_ds = dataset.shuffle(dataset.cardinality(), reshuffle_each_iteration=
 
 print("Number of images in training dataset: ", train_list_ds.cardinality().numpy())
 
-train_images_ds = train_list_ds.take(500).map(parse_image, num_parallel_calls=tf.data.AUTOTUNE)
+train_images_ds = train_list_ds.map(parse_image, num_parallel_calls=tf.data.AUTOTUNE)
 train_images_ds = train_images_ds.shuffle(train_images_ds.cardinality(), reshuffle_each_iteration=True).batch(
     batch_size)
 val_split = int(0.2 * len(train_images_ds))
@@ -76,8 +79,8 @@ with strategy.scope():
 
     print('Model has ' + str(len(model.layers)) + ' layers')
 
-    # for layer in model.layers[5:-5]:
-    #   layer.trainable = False
+    for layer in model.layers[5:-layers_to_train]:
+        layer.trainable = False
 
     model.summary()
 
