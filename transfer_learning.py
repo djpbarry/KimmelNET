@@ -21,7 +21,7 @@ train_parent = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/"
 # train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
 dataset_path = 'Zebrafish_Train_Princeton_Regression'
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-output_path = "outputs" + os.sep + name + "_" + date_time + '_' + dataset_path
+output_path = "outputs" + os.sep + name + "_" + date_time + '_' + dataset_path + '_' + sys.argv[4]
 train_path = train_parent + os.sep + dataset_path
 
 os.makedirs(output_path)
