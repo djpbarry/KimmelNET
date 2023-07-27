@@ -86,7 +86,10 @@ with strategy.scope():
 
     with open(output_path + os.sep + name + '_model_summary.txt', 'w') as fh:
         model.summary(print_fn=lambda x: fh.write(x + '\n'))
+        fh.write('\n\nModel: ' + model_dir)
         fh.write('\n\nTraining Data: ' + train_path)
+        fh.write('\n\nSize of Training Data: ' + str(len(train_files)))
+        fh.write('\n\nLayers Retrained: ' + str(layers_to_train))
 
     model.compile(loss="mean_squared_error", optimizer=keras.optimizers.Adam(learning_rate=0.0001))
 
