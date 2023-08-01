@@ -1,5 +1,6 @@
 import glob
 import os
+import shutil
 import sys
 
 import matplotlib.pyplot as plt
@@ -23,7 +24,10 @@ dblue = (0.0, 0.0, 0.5)
 
 parent_model_path = '/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/'
 model_list = glob.glob(parent_model_path + os.sep + sys.argv[2])
+model_list.sort()
 model_path = model_list[int(sys.argv[1])]
+
+suffix = sys.argv[3]
 
 datasets = (('Zebrafish_Test_Regression', 'Zebrafish_25C', 'Crick'),
             ('Zebrafish_Test_Princeton_Regression', '20232803 ZF 15 mins 25', 'Princeton'))
@@ -31,11 +35,15 @@ datasets = (('Zebrafish_Test_Regression', 'Zebrafish_25C', 'Crick'),
 model_name = os.path.basename(model_path)
 print('Working on results for model ' + model_name)
 plot_path = parent_model_path + os.sep + model_name + os.sep + 'plots'
+
+if os.path.exists(plot_path):
+    shutil.rmtree(plot_path)
+
 os.makedirs(plot_path)
 training_log = glob.glob(parent_model_path + os.sep + model_name + os.sep + '*training.log')
 trainingProgressData = pandas.read_csv(training_log[0])
 
-plt.figure(figsize=(9.0, 3.0), dpi=200)
+plt.figure(figsize=(5.0, 5.0), dpi=300)
 plt.plot(trainingProgressData['epoch'], trainingProgressData['loss'], linewidth=1.0, color=dblue,
          label='Training Loss')
 plt.plot(trainingProgressData['epoch'], trainingProgressData['val_loss'], linewidth=1.0, color=dred,
@@ -45,7 +53,7 @@ plt.ylabel("Loss")
 # plt.xlim(left=0, right=55)
 # plt.ylim(top=60, bottom=0)
 plt.legend(fontsize=8, markerscale=1.5)
-plt.savefig(plot_path + os.sep + 'Training_Progress.png')
+plt.savefig(plot_path + os.sep + 'Training_Progress_' + suffix + '.png')
 plt.close()
 
 for wt_folder, mut_folder, data_label in datasets:
@@ -79,7 +87,7 @@ for wt_folder, mut_folder, data_label in datasets:
 
     r2 = r2_score(mutData['Prediction'], func(mutData['Label'], mutpopt))
 
-    plt.figure(figsize=(5.0, 5.0), dpi=200)
+    plt.figure(figsize=(6.0, 5.0), dpi=300)
     plt.plot(wtData['Label'], wtData['Prediction'], 'o', markersize=1, alpha=0.5, mfc=lblue, mec=lblue,
              label='28.5C')
     plt.plot(mutData['Label'], mutData['Prediction'], 'o', markersize=1, alpha=0.5, mfc=lred, mec=lred,
@@ -94,43 +102,63 @@ for wt_folder, mut_folder, data_label in datasets:
     plt.xlim(left=0, right=55)
     plt.ylim(top=60, bottom=0)
     plt.legend(fontsize=8, markerscale=1.5)
-    plt.savefig(plot_path + os.sep + data_label + '_Prediction_Accuracy.png')
+    plt.savefig(plot_path + os.sep + data_label + '_Prediction_Accuracy_' + suffix + '.png')
     plt.close()
 
     wterrs = wtData['Prediction'] - wtData['Label'] * wtpopt1
-    print(np.mean(wterrs))
-    print(sem(wterrs))
-    print(np.std(wterrs))
     muterrs = mutData['Prediction'] - mutData['Label'] * mutpopt
-    print(np.mean(muterrs))
-    print(sem(muterrs))
-    print(np.std(muterrs))
     wt_kim_errs = wtData['Prediction'] - wtData['Label']
     mut_kim_errs = mutData['Prediction'] - mutData['Label'] * 0.805
 
     errs = [wterrs, wt_kim_errs]
 
-    plt.figure(figsize=(5.0, 5.0), dpi=200)
+    plt.figure(figsize=(6.0, 5.0), dpi=300)
     plt.hist(errs, bins=50, range=[-40, 40], color=[dblue, lblue2], label=['Best Fit', 'Kimmel'], density=True)
     plt.xlabel("Prediction Error")
     plt.ylabel("Relative Frequency")
-    plt.xlim(left=-40, right=40)
-    plt.ylim(bottom=0, top=0.1)
+    plt.xlim(left=-30, right=30)
+    plt.ylim(bottom=0, top=0.25)
     plt.legend(fontsize=8, markerscale=1.5)
-    plt.savefig(plot_path + os.sep + data_label + '_WT_Prediction_Errors.png')
+    plt.savefig(plot_path + os.sep + data_label + '_WT_Prediction_Errors_' + suffix + '.png')
     plt.close()
 
     errs = [muterrs, mut_kim_errs]
 
-    plt.figure(figsize=(5.0, 5.0), dpi=200)
+    plt.figure(figsize=(6.0, 5.0), dpi=300)
     plt.hist(errs, bins=50, range=[-40, 40], color=[dred, lred2], label=['Best Fit', 'Kimmel'], density=True)
     plt.xlabel("Prediction Error")
     plt.ylabel("Relative Frequency")
-    plt.xlim(left=-40, right=40)
-    plt.ylim(bottom=0, top=0.1)
+    plt.xlim(left=-30, right=30)
+    plt.ylim(bottom=0, top=0.25)
     plt.legend(fontsize=8, markerscale=1.5)
-    plt.savefig(plot_path + os.sep + data_label + '_MUT_Prediction_Errors.png')
+    plt.savefig(plot_path + os.sep + data_label + '_MUT_Prediction_Errors_' + suffix + '.png')
     plt.close()
+
+    mMin = 1
+    mMax = -1
+    for i in range(10000):
+        wtDataSubset = wtData.sample(100)
+        wtpopt3, wtpcov3 = curve_fit(func, wtDataSubset['Label'], wtDataSubset['Prediction'])
+        if wtpopt3 < mMin:
+            mMin = wtpopt3
+        if wtpopt3 > mMax:
+            mMax = wtpopt3
+
+    wty3 = mMin * x_s
+    wty4 = mMax * x_s
+
+    mMin = 1
+    mMax = -1
+    for i in range(10000):
+        mutDataSubset = mutData.sample(100)
+        mutpopt3, mutpcov3 = curve_fit(func, mutDataSubset['Label'], mutDataSubset['Prediction'])
+        if mutpopt3 < mMin:
+            mMin = mutpopt3
+        if mutpopt3 > mMax:
+            mMax = mutpopt3
+
+    muty3 = mMin * x_s
+    muty4 = mMax * x_s
 
     mMin = 1
     mMax = -1
@@ -148,19 +176,6 @@ for wt_folder, mut_folder, data_label in datasets:
     mMin = 1
     mMax = -1
     for i in range(10000):
-        wtDataSubset = wtData.sample(50)
-        wtpopt3, wtpcov3 = curve_fit(func, wtDataSubset['Label'], wtDataSubset['Prediction'])
-        if wtpopt3 < mMin:
-            mMin = wtpopt3
-        if wtpopt3 > mMax:
-            mMax = wtpopt3
-
-    wty3 = mMin * x_s
-    wty4 = mMax * x_s
-
-    mMin = 1
-    mMax = -1
-    for i in range(10000):
         mutDataSubset = mutData.sample(200)
         mutpopt2, mutpcov2 = curve_fit(func, mutDataSubset['Label'], mutDataSubset['Prediction'])
         if mutpopt2 < mMin:
@@ -171,26 +186,13 @@ for wt_folder, mut_folder, data_label in datasets:
     muty1 = mMin * x_s
     muty2 = mMax * x_s
 
-    mMin = 1
-    mMax = -1
-    for i in range(10000):
-        mutDataSubset = mutData.sample(50)
-        mutpopt3, mutpcov3 = curve_fit(func, mutDataSubset['Label'], mutDataSubset['Prediction'])
-        if mutpopt3 < mMin:
-            mMin = mutpopt3
-        if mutpopt3 > mMax:
-            mMax = mutpopt3
-
-    muty3 = mMin * x_s
-    muty4 = mMax * x_s
-
-    plt.figure(figsize=(5.0, 5.0), dpi=200)
+    plt.figure(figsize=(6.0, 5.0), dpi=300)
+    plt.fill_between(x_s, muty3, muty4, color=lred2, label='25.0C Outer Confidence Interval')
     plt.fill_between(x_s, wty3, wty4, color=lblue2, label='28.5C Outer Confidence Interval')
+    plt.fill_between(x_s, muty1, muty2, color=lred, label='25.0C Inner Confidence Interval')
     plt.fill_between(x_s, wty1, wty2, color=lblue, label='28.5C Inner Confidence Interval')
     plt.plot(x_s, func(x_s, wtpopt1), linewidth=1.5, color=dblue, label='28.5C fit')
     plt.plot(x_s, kimmel_wt(x_s), linewidth=1.5, linestyle='--', color=dblue, label='28.5C Kimmel')
-    plt.fill_between(x_s, muty3, muty4, color=lred2, label='25.0C Outer Confidence Interval')
-    plt.fill_between(x_s, muty1, muty2, color=lred, label='25.0C Inner Confidence Interval')
     plt.plot(x_s, kimmel_mut(x_s), linewidth=1.5, linestyle='--', color=dred, label='25.0C Kimmel')
     plt.plot(x_s, func(x_s, mutpopt), linewidth=1.5, color=dred, label='25.0C fit')
 
@@ -199,5 +201,15 @@ for wt_folder, mut_folder, data_label in datasets:
     plt.xlim(left=0, right=55)
     plt.ylim(top=60, bottom=0)
     plt.legend(fontsize=8, markerscale=1.5, loc='upper left')
-    plt.savefig(plot_path + os.sep + data_label + '_Confidence_Intervals.png')
+    plt.savefig(plot_path + os.sep + data_label + '_Confidence_Intervals_' + suffix + '.png')
     plt.close()
+
+    with open(plot_path + os.sep + 'errors_stats.txt', 'a') as fh:
+        fh.write('\n\nDataset: ' + wt_folder)
+        fh.write('\nMean: ' + str(np.mean(wterrs)))
+        fh.write('\nSEM: ' + str(sem(wterrs)))
+        fh.write('\nSD: ' + str(np.std(wterrs)))
+        fh.write('\n\nDataset: ' + mut_folder)
+        fh.write('\nMean: ' + str(np.mean(muterrs)))
+        fh.write('\nSEM: ' + str(sem(muterrs)))
+        fh.write('\nSD: ' + str(np.std(muterrs)))
