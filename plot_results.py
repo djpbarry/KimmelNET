@@ -73,7 +73,7 @@ for wt_folder, mut_folder, data_label in datasets:
     kimmel_wt = np.polynomial.polynomial.Polynomial([0, 1])
     wtpopt1, wtpcov1 = curve_fit(func, wtData['Label'], wtData['Prediction'])
 
-    r2 = r2_score(wtData['Prediction'], func(wtData['Label'], wtpopt1))
+    wt_r2 = r2_score(wtData['Prediction'], func(wtData['Label'], wtpopt1))
 
     # print(wtpopt1, np.sqrt(np.diag(wtpcov1)))
 
@@ -82,10 +82,10 @@ for wt_folder, mut_folder, data_label in datasets:
     mut_linear_model = np.polyfit(mutData['Label'], mutData['Prediction'], 1)
     mut_linear_model_fn = np.poly1d(mut_linear_model)
     kimmel_mut = np.polynomial.polynomial.Polynomial([0, 0.805])
-    mutpopt, mutpcov = curve_fit(func, mutData['Label'], mutData['Prediction'])
+    mutpopt1, mutpcov1 = curve_fit(func, mutData['Label'], mutData['Prediction'])
     x_s = np.arange(0, 53)
 
-    r2 = r2_score(mutData['Prediction'], func(mutData['Label'], mutpopt))
+    mut_r2 = r2_score(mutData['Prediction'], func(mutData['Label'], mutpopt1))
 
     plt.figure(figsize=(6.0, 5.0), dpi=300)
     plt.plot(wtData['Label'], wtData['Prediction'], 'o', markersize=1, alpha=0.5, mfc=lblue, mec=lblue,
@@ -95,7 +95,7 @@ for wt_folder, mut_folder, data_label in datasets:
     plt.plot(x_s, func(x_s, wtpopt1), linewidth=1.5, color=dblue, label='28.5C fit')
     # plt.fill_between(x_s, y1, y2, color="blue", alpha = 0.3)
     plt.plot(x_s, kimmel_wt(x_s), linewidth=1.5, linestyle='--', color=dblue, label='28.5C Kimmel')
-    plt.plot(x_s, func(x_s, mutpopt), linewidth=1.5, color=dred, label='25.0C fit')
+    plt.plot(x_s, func(x_s, mutpopt1), linewidth=1.5, color=dred, label='25.0C fit')
     plt.plot(x_s, kimmel_mut(x_s), linewidth=1.5, linestyle='--', color=dred, label='25.0C Kimmel')
     plt.xlabel("Actual HPF")
     plt.ylabel("Predicted HPF")
@@ -106,7 +106,7 @@ for wt_folder, mut_folder, data_label in datasets:
     plt.close()
 
     wterrs = wtData['Prediction'] - wtData['Label'] * wtpopt1
-    muterrs = mutData['Prediction'] - mutData['Label'] * mutpopt
+    muterrs = mutData['Prediction'] - mutData['Label'] * mutpopt1
     wt_kim_errs = wtData['Prediction'] - wtData['Label']
     mut_kim_errs = mutData['Prediction'] - mutData['Label'] * 0.805
 
@@ -194,7 +194,7 @@ for wt_folder, mut_folder, data_label in datasets:
     plt.plot(x_s, func(x_s, wtpopt1), linewidth=1.5, color=dblue, label='28.5C fit')
     plt.plot(x_s, kimmel_wt(x_s), linewidth=1.5, linestyle='--', color=dblue, label='28.5C Kimmel')
     plt.plot(x_s, kimmel_mut(x_s), linewidth=1.5, linestyle='--', color=dred, label='25.0C Kimmel')
-    plt.plot(x_s, func(x_s, mutpopt), linewidth=1.5, color=dred, label='25.0C fit')
+    plt.plot(x_s, func(x_s, mutpopt1), linewidth=1.5, color=dred, label='25.0C fit')
 
     plt.xlabel("Actual HPF")
     plt.ylabel("Predicted HPF")
@@ -209,7 +209,11 @@ for wt_folder, mut_folder, data_label in datasets:
         fh.write('\nMean: ' + str(np.mean(wterrs)))
         fh.write('\nSEM: ' + str(sem(wterrs)))
         fh.write('\nSD: ' + str(np.std(wterrs)))
+        fh.write('\nm: ' + str(wtpopt1))
+        fh.write('\nR^2: ' + str(wt_r2))
         fh.write('\n\nDataset: ' + mut_folder)
         fh.write('\nMean: ' + str(np.mean(muterrs)))
         fh.write('\nSEM: ' + str(sem(muterrs)))
         fh.write('\nSD: ' + str(np.std(muterrs)))
+        fh.write('\nm: ' + str(mutpopt1))
+        fh.write('\nR^2: ' + str(mut_r2))
