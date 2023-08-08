@@ -49,7 +49,7 @@ plt.plot(trainingProgressData['epoch'], trainingProgressData['loss'], linewidth=
 plt.plot(trainingProgressData['epoch'], trainingProgressData['val_loss'], linewidth=1.0, color=dred,
          label='Validation Loss')
 plt.xlabel("Epoch")
-plt.ylabel("Loss")
+plt.ylabel("Loss (Mean Squared Error)")
 # plt.xlim(left=0, right=55)
 # plt.ylim(top=60, bottom=0)
 plt.legend(fontsize=8, markerscale=1.5)
@@ -187,10 +187,10 @@ for wt_folder, mut_folder, data_label in datasets:
     muty2 = mMax * x_s
 
     plt.figure(figsize=(6.0, 5.0), dpi=300)
-    plt.fill_between(x_s, muty3, muty4, color=lred2, label='25.0C Outer Confidence Interval')
-    plt.fill_between(x_s, wty3, wty4, color=lblue2, label='28.5C Outer Confidence Interval')
-    plt.fill_between(x_s, muty1, muty2, color=lred, label='25.0C Inner Confidence Interval')
-    plt.fill_between(x_s, wty1, wty2, color=lblue, label='28.5C Inner Confidence Interval')
+    plt.fill_between(x_s, muty3, muty4, color=lred2, label='25.0C Confidence Interval (n=100)')
+    plt.fill_between(x_s, wty3, wty4, color=lblue2, label='28.5C Confidence Interval (n=100)')
+    plt.fill_between(x_s, muty1, muty2, color=lred, label='25.0C Confidence Interval (n=200)')
+    plt.fill_between(x_s, wty1, wty2, color=lblue, label='28.5C Confidence Interval (n=200)')
     plt.plot(x_s, func(x_s, wtpopt1), linewidth=1.5, color=dblue, label='28.5C fit')
     plt.plot(x_s, kimmel_wt(x_s), linewidth=1.5, linestyle='--', color=dblue, label='28.5C Kimmel')
     plt.plot(x_s, kimmel_mut(x_s), linewidth=1.5, linestyle='--', color=dred, label='25.0C Kimmel')
