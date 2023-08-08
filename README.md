@@ -56,6 +56,6 @@ To use KimmelNet independently of the scripts and notebooks in this repo, you ca
 ```python
 from tensorflow import keras
 
-model = keras.models.load_model('./simple_regression_trained_model')
+model = keras.models.load_model('KimmelNet_Model/published_model_multi_gpu_custom_augmentation_trained_model')
 model.summary()
 ```
