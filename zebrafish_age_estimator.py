@@ -17,10 +17,8 @@ batch_size = 256
 name = definitions.test_source_folder + "_" + definitions.name
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 # output_path = "outputs" + os.sep + name + "_" + date_time
-parent_model_path = '/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/'
 data_path = '/nemo/stp/lm/working/barryd/hpc/python//keras_image_class/'
-model_list = glob.glob(parent_model_path + os.sep + sys.argv[2])
-model_path = model_list[int(sys.argv[1])]
+model_path = 'KimmelNet_Model/published_model_multi_gpu_custom_augmentation_trained_model'
 datasets = ('Zebrafish_Test_Regression', 'Zebrafish_25C', 'Zebrafish_Test_Princeton_Regression', '20232803 ZF 15 mins 25')
 
 

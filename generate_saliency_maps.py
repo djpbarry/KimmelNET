@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import skimage as sk
 import tensorflow as tf
 from tensorflow import keras
-import numpy as np
 
 import definitions
 
@@ -67,9 +66,7 @@ def guidedRelu(x):
     return tf.nn.relu(x), grad
 
 
-model = keras.models.load_model('z:/working/barryd/hpc/python/zf_reg/outputs'
-                                '/simple_regression_multi_gpu_custom_augmentation_2023-05-21-22-09-29/'
-                                'simple_regression_multi_gpu_custom_augmentation_trained_model')
+model = keras.models.load_model('KimmelNet_Model/published_model_multi_gpu_custom_augmentation_trained_model')
 
 layer_dict = [layer for layer in model.layers[1:] if hasattr(layer, 'activation')]
 for layer in layer_dict:
@@ -148,7 +145,7 @@ for x, y, z in test_ds:
     grads = tape.gradient(result, x)
     filenames = [f.decode() for f in z.numpy()]
     for g in range(len(grads)):
-        #np.savetxt(output_path + os.sep + os.path.split(filenames[g])[1] + '_saliency_map.txt', grads[g, :, :, 0])
+        # np.savetxt(output_path + os.sep + os.path.split(filenames[g])[1] + '_saliency_map.txt', grads[g, :, :, 0])
         sk.io.imsave(output_path + os.sep + os.path.split(filenames[g])[1] + '_saliency_map.tiff',
                      grads[g, :, :, 0].numpy())
         sk.io.imsave(output_path + os.sep + os.path.split(filenames[g])[1] + '_orig.tiff',
