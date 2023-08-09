@@ -55,6 +55,18 @@ Organising your images to conform to this structure can be done manually. Howeve
 
 We recommend using conda as it's relatively straightforward and makes the management of different Python environments simple. You can install conda from [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-installation) (miniconda will suffice).
 
+## Step 3: Setup Environment
+
+Once conda is installed, open a terminal (Mac) or command line (Windows) and run the following series of commands:
+
+```
+conda create --name kimmelnet pip
+conda activate kimmelnet
+python -m pip install -r <path to this repo>/requirements.txt
+```
+
+where you need to replace <path to this repo> with the location on your file system where you downloaded this repo.
+
 # Train KimmelNet On Your Own Data
 
 To train KimmelNet on your own images, you first need to organise your training data into the same folder structure used in this repo's "test_data". You can then use the [provided Python script](https://github.com/djpbarry/KimmelNET/blob/main/train_model.py) to run the training, by simply changing the `train_path` variable to specify the location of your training data - here's the first few lines of `train_model.py` with the most important variables highlighted:
