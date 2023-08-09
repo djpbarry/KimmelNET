@@ -51,6 +51,10 @@ The names of the individual images are unimportant.
 
 Organising your images to conform to this structure can be done manually. However, this might be impractical for large number of images. We have therefore provided a FIJI script to automatically convert your images and store them in the above folder structure.
 
+## Step 2: Install a Python Distribution
+
+We recommend using conda as it's relatively straightforward and makes the management of different Python environments simple. You can install conda from [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-installation) (miniconda will suffice).
+
 # Train KimmelNet On Your Own Data
 
 To train KimmelNet on your own images, you first need to organise your training data into the same folder structure used in this repo's "test_data". You can then use the [provided Python script](https://github.com/djpbarry/KimmelNET/blob/main/train_model.py) to run the training, by simply changing the `train_path` variable to specify the location of your training data - here's the first few lines of `train_model.py` with the most important variables highlighted:
