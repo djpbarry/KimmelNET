@@ -18,7 +18,38 @@ The quickest and easiest way to try KimmelNet is to [try it on Binder](https://m
 
 # Run KimmelNet On Your Own Data
 
-To test KimmelNet on your own data, the easiest thing to do is clone this repo and replace the "test_data" with your own images, using a similar folder structure. You can then use the [Jupyter Notebook](https://github.com/djpbarry/KimmelNET/blob/main/zebrafish_age_estimator.ipynb) to run KimmelNet on your own images.
+To test KimmelNet on your own data, the easiest thing to do is download this repo and replace the "test_data" with your own images, using a similar folder structure. You can then use the [Jupyter Notebook](https://github.com/djpbarry/KimmelNET/blob/main/zebrafish_age_estimator.ipynb) to run KimmelNet on your own images.
+
+## Step 1: Prepare your images
+
+Organise your images such that they can conform to the same folder structure as the test_data in this repo. Each image *must* be saved in a folder corresponding to the hours post-fertilisation when the image was captured. For example:
+```
+test_data
+|
+|-- 4.5
+|   |
+|   |   image_0.png
+|   |   image_1.png
+|   ⋮
+|   |   image_n.png
+|-- 6.0
+|   |
+|   |   image_0.png
+|   |   image_1.png
+|   ⋮
+|   |   image_n.png
+⋮
+⋮
+|-- 50.0
+|   |
+|   |   image_0.png
+|   |   image_1.png
+|   ⋮
+|   |   image_n.png
+```
+The names of the individual images are unimportant.
+
+Organising your images to conform to this structure can be done manually. However, this might be impractical for large number of images. We have therefore provided a FIJI script to automatically convert your images and store them in the above folder structure.
 
 # Train KimmelNet On Your Own Data
 
