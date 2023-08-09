@@ -65,7 +65,7 @@ conda activate kimmelnet
 python -m pip install -r <path to this repo>/requirements.txt
 ```
 
-where you need to replace <path to this repo> with the location on your file system where you downloaded this repo.
+where you need to replace `<path to this repo>` with the location on your file system where you downloaded this repo.
 
 # Train KimmelNet On Your Own Data
 
