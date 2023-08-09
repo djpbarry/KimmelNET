@@ -4,4 +4,4 @@ numpy
 pandas
 scipy
 scikit-learn
-skimage
+scikit-image
