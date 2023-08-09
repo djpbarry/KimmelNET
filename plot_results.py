@@ -23,6 +23,7 @@ dred = (0.65, 0.3, 0.0)
 dblue = (0.0, 0.0, 0.5)
 
 model_path = 'KimmelNet_Model/published_model_multi_gpu_custom_augmentation_trained_model'
+parent_model_path = '.'
 
 suffix = sys.argv[3]
 

@@ -1,8 +1,7 @@
 tensorflow
 matplotlib
-
-keras
 numpy
 pandas
 scipy
 scikit-learn
+skimage

@@ -3,7 +3,7 @@ import os
 import tensorflow as tf
 from keras_tuner import BayesianOptimization
 from tensorflow import keras
-from tensorflow.keras import layers
+from keras import layers
 
 image_size = (224, 268)
 cropped_image_size = (224, 224)
