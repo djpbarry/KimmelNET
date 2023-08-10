@@ -20,7 +20,7 @@ The quickest and easiest way to try KimmelNet is to [try it on Binder](https://m
 
 To test KimmelNet on your own data, the easiest thing to do is download this repo and replace the "test_data" with your own images, using a similar folder structure. You can then use the [Jupyter Notebook](https://github.com/djpbarry/KimmelNET/blob/main/zebrafish_age_estimator.ipynb) to run KimmelNet on your own images.
 
-A step-by-step guide is presentd below. **You only need to perform steps 1 and 2 once.** Every subsequent time you want to run KimmelNet, skip straight to step 3.
+A step-by-step guide is presented below. **You only need to perform steps 1 and 2 once.** Every subsequent time you want to run KimmelNet, skip straight to step 3.
 
 ## Step 1: Install a Python Distribution
 
@@ -87,7 +87,7 @@ conda activate kimmelnet
 jupyter notebook zebrafish_age_estimator.ipynb
 ```
 
-Follow the step-by-step instructions in the notebook to run the code.
+The Jupyter Notebook should open in your browser - follow the step-by-step instructions in the notebook to run the code. If you are not familiar with Jupyter Notebooks, you can find a detailed introduction [here](https://jupyter-notebook.readthedocs.io/en/latest/notebook.html#introduction).
 
 # Train KimmelNet On Your Own Data
 
