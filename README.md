@@ -20,7 +20,33 @@ The quickest and easiest way to try KimmelNet is to [try it on Binder](https://m
 
 To test KimmelNet on your own data, the easiest thing to do is download this repo and replace the "test_data" with your own images, using a similar folder structure. You can then use the [Jupyter Notebook](https://github.com/djpbarry/KimmelNET/blob/main/zebrafish_age_estimator.ipynb) to run KimmelNet on your own images.
 
-## Step 1: Prepare your images
+A step-by-step guide is presentd below. **You only need to perform steps 1 and 2 once.** Every subsequent time you want to run KimmelNet, skip straight to step 3.
+
+## Step 1: Install a Python Distribution
+
+We recommend using conda as it's relatively straightforward and makes the management of different Python environments simple. You can install conda from [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-installation) (miniconda will suffice).
+
+## Step 2: Set Up Environment
+
+Once conda is installed, open a terminal (Mac) or command line (Windows) and run the following series of commands:
+
+```
+conda create --name kimmelnet pip
+conda activate kimmelnet
+python -m pip install -r <path to this repo>/requirements.txt
+```
+where you need to replace `<path to this repo>` with the location on your file system where you downloaded this repo. You will be presented with a list of packages to be downloaded and installed. The following prompt will appear:
+```
+Proceed ([y]/n)?
+```
+Hit Enter and all necessary packages will be downloaded and installed - this may take some time. When complete, you can deactivate the environment you have created with the following command.
+
+```
+conda deactivate
+```
+You have successfully set up an environment to run KimmelNet!
+
+## Step 3: Prepare your images
 
 Organise your images such that they can conform to the same folder structure as the test_data in this repo. Each image *must* be saved in a folder corresponding to the hours post-fertilisation when the image was captured. For example:
 ```
@@ -51,21 +77,15 @@ The names of the individual images are unimportant.
 
 Organising your images to conform to this structure can be done manually. However, this might be impractical for large number of images. We have therefore provided a FIJI script to automatically convert your images and store them in the above folder structure.
 
-## Step 2: Install a Python Distribution
+## Step 4: Run KimmelNet
 
-We recommend using conda as it's relatively straightforward and makes the management of different Python environments simple. You can install conda from [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-installation) (miniconda will suffice).
-
-## Step 3: Setup Environment
-
-Once conda is installed, open a terminal (Mac) or command line (Windows) and run the following series of commands:
-
+The following commands will launch a Jupyter notebook allowing you to run KimmelNet on your own images:
 ```
-conda create --name kimmelnet pip
 conda activate kimmelnet
-python -m pip install -r <path to this repo>/requirements.txt
+jupyter notebook zebrafish_age_estimator.ipynb
 ```
 
-where you need to replace `<path to this repo>` with the location on your file system where you downloaded this repo.
+Follow the step-by-step instructions in the notebook to run the code.
 
 # Train KimmelNet On Your Own Data
 
