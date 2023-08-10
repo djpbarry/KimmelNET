@@ -48,6 +48,8 @@ You have successfully set up an environment to run KimmelNet!
 
 ## Step 3: Prepare your images
 
+KimmelNet processes images of size 268 x 224 pixels (width x height). don't worry if your images are a different size - they will be scaled automatically. However, if the aspect ratio of your images is substantially different to this, then KimmelNet may not perform terribly well.
+
 Organise your images such that they can conform to the same folder structure as the test_data in this repo. Each image *must* be saved in a folder corresponding to the hours post-fertilisation when the image was captured. For example:
 ```
 test_data
