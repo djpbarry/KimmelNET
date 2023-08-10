@@ -75,7 +75,7 @@ test_data
 ```
 The names of the individual images are unimportant.
 
-Organising your images to conform to this structure can be done manually. However, this might be impractical for large number of images. We have therefore provided a FIJI script to automatically convert your images and store them in the above folder structure.
+Organising your images to conform to this structure can be done manually. However, this might be impractical for large number of images. We have therefore provided a FIJI script ([IJ_Macros/OrganiseImages.ijm](https://github.com/djpbarry/KimmelNET/blob/main/IJ_Macros/OrganiseImages.ijm)) to automatically convert your images and store them in the above folder structure.
 
 ## Step 4: Run KimmelNet
 
