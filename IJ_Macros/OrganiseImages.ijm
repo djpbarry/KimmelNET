@@ -50,6 +50,9 @@ for (s = 0; s < seriesCount; s++) {
 	timeStampOutput("Processing series " + s + " of " + seriesCount);
 	for (i = 0; i < slices; i++) {
 		Ext.openImage("plane " + i, i);
+		run("Enhance Contrast", "saturated=0.35");
+		run("Apply LUT");
+		run("Size...", "width=268 height=224 depth=1 constrain average interpolation=Bicubic");
 		run("8-bit");
 		timeStampOutput("Saving slice " + i + " of " + slices);
 		saveAs("PNG", output + File.separator() + outputFolders[i] + File.separator() + File.getName(input) + "-" + s + "-" + i + ".png" );
