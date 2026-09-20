@@ -12,6 +12,31 @@ description: >-
 
 license: GPL-3.0
 
+timestamp: "2026-09-20T12:00:00+00:00"
+
+config:
+  bioimageio:
+    modality: "brightfield"
+    task: "regression"
+    model_parameter_count: 821121
+    bias_risks_limitations:
+      limitations: >-
+        Trained on brightfield images; may underperform on very different aspect
+        ratios or acquisition settings. Most reliable within the training age
+        range (~4.5 to 50 hpf).
+      risks: "Predictions may be inaccurate for embryos outside the training age range."
+      known_biases: "Trained on wild-type zebrafish at two incubation temperatures."
+      recommendations: "Validate predictions against established staging references for critical use."
+    out_of_scope_use: >-
+      Images with substantially different aspect ratios, acquisition settings,
+      or developmental stages outside the training range.
+    training:
+      optimizer: "adam"
+      loss_function: "mean_squared_error"
+      initial_learning_rate: 0.0005
+      training_epochs: 500
+      training_batch_size: 64
+
 authors:
   - name: Rebecca A. Jones
     orcid: 0000-0002-1530-5400
