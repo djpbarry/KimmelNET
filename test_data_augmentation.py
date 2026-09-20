@@ -24,11 +24,9 @@ batch_size = 32
 buffer_size = 1
 name = "simple_regression_" + definitions.name
 
-# train_path = "Zebrafish_Train_Regression"
+# HPC/lab-specific paths — change these to run in your own environment.
 train_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression"
 aug_path = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
-# train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression/"
-# train_path = "C:/Users/davej/Dropbox (The Francis Crick)/ZF_Test"
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = aug_path + '_' + date_time + '_' + sys.argv[1]
 

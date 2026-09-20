@@ -14,11 +14,9 @@ epochs = int(sys.argv[2])
 layers_to_train = int(sys.argv[3])
 name = 'transfer_learning'
 
-# model_dir = "/nemo/stp/lm/working/barryd/hpc/python/zf_reg/outputs/published_model_v1.2/published_model_multi_gpu_custom_augmentation_trained_model/"
 model_dir = sys.argv[1]
-# train_path = "Zebrafish_Train_Regression"
+# HPC/lab-specific path — change this to run in your own environment.
 train_parent = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/"
-# train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
 dataset_path = 'Zebrafish_Train_Princeton_Regression'
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 output_path = "outputs" + os.sep + name + "_" + date_time + '_' + dataset_path + '_' + sys.argv[4]

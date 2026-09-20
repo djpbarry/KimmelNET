@@ -1,3 +1,4 @@
+// Lab/HPC-specific paths — change these to run in your own environment.
 input = "/camp/stp/lm/inputs/smithj/Rebecca Ann Jones/FishDev_WT_25C_1";
 temp = "/camp/stp/lm/working/barryd/temp";
 output = "/camp/stp/lm/working/barryd/hpc/python/zf_reg";

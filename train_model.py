@@ -22,9 +22,8 @@ batch_size = 64
 epochs = 500
 name = "published_model_" + definitions.name
 
-# train_path = "Zebrafish_Train_Regression"
+# HPC/lab-specific paths — change these to run in your own environment.
 train_parent = "/nemo/stp/lm/working/barryd/hpc/python/keras_image_class/"
-#train_path = "Z:/working/barryd/hpc/python/keras_image_class/Zebrafish_Train_Regression_Augmented"
 data_paths = glob.glob(train_parent + os.sep + "Zebrafish_Train_Regression_Augmented_2023-06-09-17-12-46-932556")
 train_path = data_paths[int(sys.argv[1])]
 date_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")

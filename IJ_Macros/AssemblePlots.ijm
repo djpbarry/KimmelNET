@@ -1,5 +1,6 @@
 close("*");
 
+// Lab/HPC-specific path — change this to run in your own environment.
 inputDir = "Z:/working/barryd/hpc/python/zf_reg/outputs";
 
 dirList = getFileList(inputDir);

@@ -78,6 +78,7 @@ for layer in layer_dict:
 
 model.summary()
 
+# HPC/lab-specific path — change this to run in your own environment.
 test_path = "z:/working/barryd/hpc/python/keras_image_class/" + definitions.test_source_folder
 
 test_files = glob.glob(test_path + os.sep + "*" + os.sep + "*.png")
