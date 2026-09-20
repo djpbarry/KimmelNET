@@ -1,0 +1,52 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+title: "KimmelNET"
+abstract: >-
+  Automated staging of zebrafish embryos with deep learning. KimmelNET predicts
+  the age (hours post fertilisation) of individual zebrafish embryos from 2D
+  brightfield images.
+authors:
+  - family-names: Jones
+    given-names: Rebecca A.
+    orcid: "https://orcid.org/0000-0002-1530-5400"
+  - family-names: Renshaw
+    given-names: Matthew J.
+  - family-names: Barry
+    given-names: David J.
+    orcid: "https://orcid.org/0000-0003-2763-5244"
+    email: david.barry@crick.ac.uk
+    affiliation: The Francis Crick Institute
+identifiers:
+  - type: doi
+    value: 10.26508/lsa.202302351
+    description: The companion publication describing KimmelNET.
+repository-code: "https://github.com/djpbarry/KimmelNET"
+license: GPL-3.0
+keywords:
+  - zebrafish
+  - deep learning
+  - regression
+  - microscopy
+  - bioimage analysis
+  - developmental biology
+preferred-citation:
+  type: article
+  title: "Automated staging of zebrafish embryos with deep learning"
+  authors:
+    - family-names: Jones
+      given-names: Rebecca A.
+      orcid: "https://orcid.org/0000-0002-1530-5400"
+    - family-names: Renshaw
+      given-names: Matthew J.
+    - family-names: Barry
+      given-names: David J.
+      orcid: "https://orcid.org/0000-0003-2763-5244"
+  journal: "Life Science Alliance"
+  year: 2024
+  volume: 7
+  issue: 1
+  article-number: e202302351
+  doi: 10.26508/lsa.202302351
+  url: "https://doi.org/10.26508/lsa.202302351"
+  license: CC-BY-4.0
