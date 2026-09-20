@@ -1,0 +1,25 @@
+[workspace]
+authors = ["Dave Barry <david.barry@crick.ac.uk>"]
+channels = ["conda-forge"]
+name = "KimmelNET"
+platforms = ["win-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "<3.14"
+pixi-pycharm = ">=0.0.12,<0.0.13"
+
+[environments]
+kimmel = ["default"]
+
+[pypi-dependencies]
+tensorflow = ">=2.21.0, <3"
+matplotlib = ">=3.11.2, <4"
+numpy = ">=2.5.3, <3"
+pandas = ">=3.0.6, <4"
+scipy = ">=1.18.1, <2"
+scikit-learn = ">=1.9.1, <2"
+scikit-image = ">=0.26.0, <0.27"
+notebook = ">=7.6.2, <8"
