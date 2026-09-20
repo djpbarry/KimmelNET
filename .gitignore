@@ -1,0 +1,6 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+# bioimage.io generated package
+bioimageio_package/generated/
