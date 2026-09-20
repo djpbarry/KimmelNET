@@ -131,6 +131,20 @@ model = keras.models.load_model('KimmelNet_Model/published_model_multi_gpu_custo
 model.summary()
 ```
 
+> **Note (Keras 3):** `keras.models.load_model()` does not support the legacy SavedModel format on Keras 3. If you are on Keras 3, load the model as an inference-only layer instead:
+> ```python
+> from keras.layers import TFSMLayer
+> model = tf.keras.Sequential([TFSMLayer('KimmelNet_Model/published_model_multi_gpu_custom_augmentation_trained_model', call_endpoint='serving_default')])
+> model.compile()
+> ```
+
+# BioImage Model Zoo
+
+KimmelNET is available in the [BioImage Model Zoo](https://bioimage.io), making it
+discoverable and runnable by tools such as [BioEngine](https://github.com/aicell-lab/bioengine),
+ilastik, QuPath, Fiji, and napari. The packaging source (a `rdf.yaml` manifest, README,
+test tensors, and cover image) lives in [`bioimageio_package/`](bioimageio_package/).
+
 # Citation
 
 If you use KimmelNET in your research, please cite the accompanying publication:

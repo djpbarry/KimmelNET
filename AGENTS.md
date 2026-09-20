@@ -13,7 +13,8 @@ The primary user-facing entry point is the Jupyter notebook `zebrafish_age_estim
 - Python 3.10 (per README badge).
 - Dependencies are in `requirements.txt`: `tensorflow`, `matplotlib`, `numpy`, `pandas`, `scipy`, `scikit-learn`, `scikit-image`, `notebook`.
 - `requirements.txt` uses **unpinned** version specifiers. This matters: the notebook uses `TFSMLayer` (from `keras.layers`) and `serving_default` endpoints, whereas several `.py` scripts use `keras.models.load_model(...)` and older preprocessing APIs (`layers.experimental.preprocessing.*`), which only work on specific TensorFlow versions.
-- There is **no** setup.py/pyproject.toml, no test framework, no linter, no CI, and no Makefile. There are no automated tests and no build step.
+- A **pixi** environment (`pixi.toml`) is the actively maintained way to run the code. It pins TensorFlow 2.21, the bioimageio toolchain (`bioimageio-core`, `bioimageio-spec`), and `hypha-rpc`. Prefer `pixi run python ...` over manually installing `requirements.txt`; the two dependency sets are not kept in lockstep.
+- There is **no** setup.py/pyproject.toml, no test framework, no linter, no CI, and no Makefile. There are no automated tests and no build step (the BioImage Model Zoo packaging has its own validation, see below).
 
 ## Key Commands
 
@@ -30,6 +31,10 @@ jupyter notebook zebrafish_age_estimator.ipynb
 
 # Load the published model directly from Python
 python -c "from tensorflow import keras; m = keras.models.load_model('KimmelNet_Model/published_model_multi_gpu_custom_augmentation_trained_model'); m.summary()"
+
+# BioImage Model Zoo packaging (see bioimageio_package/)
+pixi run python bioimageio_package/build_tensors.py   # regenerate test tensors + cover
+pixi run bioimageio test bioimageio_package/generated/rdf.yaml   # static + dynamic validate
 ```
 
 ## Architecture & Data Flow
@@ -56,6 +61,7 @@ Standard pipeline (each script re-implements it rather than sharing a module):
 
 | File | Purpose |
 |------|---------|
+| `CITATION.cff` | Machine-readable citation (Citation File Format). Source of truth for the paper reference; reused by the BioImage Model Zoo metadata. |
 | `definitions.py` | Shared constants used by several scripts (`name`, `test_source_folder`). Note: declares `test_source_folder: str = "..."` as an *annotated* variable which is legal but non-idiomatic at module level with no assignment style. |
 | `zebrafish_age_estimator.ipynb` | Primary user-facing estimator; loads model via `TFSMLayer(..., call_endpoint='serving_default')`. |
 | `train_model.py` | Full training script. Uses `tf.distribute.MirroredStrategy()`. Takes dataset index from `sys.argv[1]`. Saves model + a copy of its own source + training log + sample-image plot. |
@@ -66,6 +72,8 @@ Standard pipeline (each script re-implements it rather than sharing a module):
 | `plot_results.py` | Post hoc analysis/plotting over prediction CSVs. Args: `sys.argv[3]`=plot filename suffix. Runs 10,000-sample bootstrap loops. |
 | `IJ_Macros/*.ijm` | FIJI/ImageJ macros to organise raw images into the required folder structure. `OrganiseImages.ijm` requires the **Bio-Formats** plugin. |
 | `KimmelNet_Model/.../` | The published, pre-trained model in TensorFlow SavedModel format (`saved_model.pb`, `variables/`, `fingerprint.pb`). |
+| `pixi.toml` / `pixi.lock` | Pixi environment manifest and lockfile for running the code and the BioImage Model Zoo toolchain. |
+| `bioimageio_package/` | BioImage Model Zoo packaging. `generated/` holds the actual `rdf.yaml`, `README.md`, weights zip, and test/sample/cover artifacts (git-ignored). `build_tensors.py` regenerates them. The `hypha_login.py` / `upload_model.py` / `submit_for_review.py` scripts are downloaded submission tooling. |
 
 ## Conventions & Patterns
 
@@ -88,3 +96,15 @@ Standard pipeline (each script re-implements it rather than sharing a module):
 ## Testing
 
 There is no test suite. To sanity-check changes, the practical approach is to run a small slice of the notebook or one of the scripts against the bundled `test_data/` (a small sample of 50 labelled images) and confirm it loads the model and produces predictions. Be aware that `train_model.py` and `transfer_learning.py` require HPC-scale data not present in the repo and won't meaningfully run locally without external datasets.
+
+## BioImage Model Zoo contribution
+
+KimmelNET is packaged for publication on bioimage.io (artifact `bioimage-io/lively-shark`, submitted in-review). The packaging lives under `bioimageio_package/`.
+
+- **The published SavedModel is the source of truth.** Its single `serving_default` signature is `input_1` (float32 `[batch, 224, 268, 1]`, raw 0-255 intensity) → `dense` (float32 `[batch, 1]`, HPF). The `Rescaling(1/255)` and `CenterCrop` layers are baked **into** the graph, so no RDF preprocessing is declared beyond `ensure_dtype: float32`.
+- **Regenerate artifacts** with `pixi run python bioimageio_package/build_tensors.py`; this runs the real model on a real `test_data/` image to produce genuine `test_input.npy`/`test_output.npy` (never hand-craft these — it violates the bioimage.io integrity rules).
+- **Validate** with `pixi run bioimageio test bioimageio_package/generated/rdf.yaml`. After editing `rdf.yaml`, recompute the `sha256` of any changed referenced file and update it in the YAML (weights zip especially — its hash changed when the zip was rebuilt with flat contents).
+- **The SavedModel must be zipped with `saved_model.pb` at the archive root** (not under a nested folder), or the bioimageio TF backend fails to locate it.
+- **`metadata_completeness` is capped ~0.5** for a single-weight-format model: the score denominator includes every unsupported weight format and server-managed field. Don't chase a 1.0; it's unreachable without shipping redundant converted weights.
+- **Secrets**: `bioimageio_package/.env` holds the Hypha token and is git-ignored. Never commit it or echo it into logs.
+- **Submission scripts** (`hypha_login.py`, `upload_model.py`, `submit_for_review.py`) were downloaded verbatim from the bioimage.io skill and are not part of the model package; pass the `generated/` directory (not `bioimageio_package/`) as the package dir when uploading.
