@@ -130,3 +130,11 @@ from tensorflow import keras
 model = keras.models.load_model('KimmelNet_Model/published_model_multi_gpu_custom_augmentation_trained_model')
 model.summary()
 ```
+
+# Citation
+
+If you use KimmelNET in your research, please cite the accompanying publication:
+
+> Jones RA, Renshaw MJ and Barry DJ. Automated staging of zebrafish embryos with deep learning. _Life Science Alliance_, 7 (1): e202302351. DOI: [10.26508/lsa.202302351](https://doi.org/10.26508/lsa.202302351)
+
+A machine-readable citation is available in [`CITATION.cff`](CITATION.cff).
