@@ -27,9 +27,9 @@ def parse_image(filename):
 def build_model(hp):
     model = keras.Sequential()
     model.add(keras.Input(shape=image_size + (1,)))
-    model.add(layers.experimental.preprocessing.RandomFlip(mode="horizontal_and_vertical"))
-    model.add(layers.experimental.preprocessing.Rescaling(1.0 / 255))
-    model.add(layers.experimental.preprocessing.CenterCrop(cropped_image_size[0], cropped_image_size[1]))
+    model.add(layers.RandomFlip(mode="horizontal_and_vertical"))
+    model.add(layers.Rescaling(1.0 / 255))
+    model.add(layers.CenterCrop(cropped_image_size[0], cropped_image_size[1]))
     for i in range(4):
         model.add(layers.Conv2D(hp.Int("units_" + str(i), min_value=48, max_value=64, step=16), kernel_size=(3, 3),
                                 activation="relu"))
