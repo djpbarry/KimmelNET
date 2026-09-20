@@ -20,6 +20,17 @@ authors:
     affiliation: The Francis Crick Institute
   - name: David J. Barry
     orcid: 0000-0003-2763-5244
+    github_user: djpbarry
+    affiliation: The Francis Crick Institute
+
+packaged_by:
+  - name: David J. Barry
+    github_user: djpbarry
+    affiliation: The Francis Crick Institute
+
+maintainers:
+  - name: David J. Barry
+    github_user: djpbarry
     affiliation: The Francis Crick Institute
 
 cite:
@@ -32,7 +43,10 @@ git_repo: https://github.com/djpbarry/KimmelNET
 
 tags:
   - brightfield
+  - light-microscopy
   - zebrafish
+  - embryo
+  - staging
   - hpf
   - regression
   - developmental-biology
