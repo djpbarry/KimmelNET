@@ -4,3 +4,7 @@
 
 # bioimage.io generated package
 bioimageio_package/generated/
+
+# secrets
+.env
+bioimageio_package/.env
