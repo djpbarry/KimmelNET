@@ -99,7 +99,7 @@ There is no test suite. To sanity-check changes, the practical approach is to ru
 
 ## BioImage Model Zoo contribution
 
-KimmelNET is packaged for publication on bioimage.io (artifact `bioimage-io/lively-shark`, submitted in-review). The packaging lives under `bioimageio_package/`.
+KimmelNET is published on bioimage.io (artifact `bioimage-io/lively-shark`, https://bioimage.io/#/artifacts/lively-shark). The packaging lives under `bioimageio_package/`.
 
 - **The published SavedModel is the source of truth.** Its single `serving_default` signature is `input_1` (float32 `[batch, 224, 268, 1]`, raw 0-255 intensity) → `dense` (float32 `[batch, 1]`, HPF). The `Rescaling(1/255)` and `CenterCrop` layers are baked **into** the graph, so no RDF preprocessing is declared beyond `ensure_dtype: float32`.
 - **Regenerate artifacts** with `pixi run python bioimageio_package/build_tensors.py`; this runs the real model on a real `test_data/` image to produce genuine `test_input.npy`/`test_output.npy` (never hand-craft these — it violates the bioimage.io integrity rules).

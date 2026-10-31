@@ -142,8 +142,12 @@ model.summary()
 
 KimmelNET is available in the [BioImage Model Zoo](https://bioimage.io), making it
 discoverable and runnable by tools such as [BioEngine](https://github.com/aicell-lab/bioengine),
-ilastik, QuPath, Fiji, and napari. The packaging source (a `rdf.yaml` manifest, README,
-test tensors, and cover image) lives in [`bioimageio_package/`](bioimageio_package/).
+ilastik, QuPath, Fiji, and napari.
+
+- **Model page:** https://bioimage.io/#/artifacts/lively-shark
+
+The packaging source (a `rdf.yaml` manifest, README, test tensors, and cover image)
+lives in [`bioimageio_package/`](bioimageio_package/).
 
 # Citation
 
