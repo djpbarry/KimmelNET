@@ -1,6 +1,6 @@
 # Automated staging of zebrafish embryos with KimmelNet
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/djpbarry/KimmelNET/main?labpath=zebrafish_age_estimator.ipynb) [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/) ![Commit activity](https://img.shields.io/github/commit-activity/y/djpbarry/KimmelNET?style=plastic) ![GitHub](https://img.shields.io/github/license/djpbarry/KimmelNET?color=green&style=plastic)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/djpbarry/KimmelNET/main?labpath=zebrafish_age_estimator.ipynb) [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/) [![BioImage Model Zoo](https://img.shields.io/badge/BioImage_Model_Zoo-KimmelNET-0891d1.svg?style=plastic)](https://bioimage.io/#/artifacts/lively-shark) ![Commit activity](https://img.shields.io/github/commit-activity/y/djpbarry/KimmelNET?style=plastic) ![GitHub](https://img.shields.io/github/license/djpbarry/KimmelNET?color=green&style=plastic)
 
 ![Overview](https://github.com/djpbarry/KimmelNET/blob/main/images/animation_frames.gif)
 
