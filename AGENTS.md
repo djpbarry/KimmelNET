@@ -108,3 +108,7 @@ KimmelNET is published on bioimage.io (artifact `bioimage-io/lively-shark`, http
 - **`metadata_completeness` is capped ~0.5** for a single-weight-format model: the score denominator includes every unsupported weight format and server-managed field. Don't chase a 1.0; it's unreachable without shipping redundant converted weights.
 - **Secrets**: `bioimageio_package/.env` holds the Hypha token and is git-ignored. Never commit it or echo it into logs.
 - **Submission scripts** (`hypha_login.py`, `upload_model.py`, `submit_for_review.py`) were downloaded verbatim from the bioimage.io skill and are not part of the model package; pass the `generated/` directory (not `bioimageio_package/`) as the package dir when uploading.
+
+## Future Plans
+
+- **PyPI distribution** (planned, not started): publish KimmelNET as a thin inference package so users can `pip install kimmelnet` and call a `predict()` API in their own scripts. Requires a `pyproject.toml` + `src/kimmelnet/` namespace (the repo currently has neither — the existing `.py` files are HPC-bound research scripts, not a library). The package should wrap the published SavedModel via `TFSMLayer(..., call_endpoint='serving_default')` and bundle the ~7 MB weights (or download from the bioimage.io weights URL). Two open decisions: bundle weights in the wheel vs. download-on-first-use, and whether to expose only inference or also the plotting helpers. The `kimmelnet` name is free on PyPI.
